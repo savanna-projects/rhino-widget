@@ -3,7 +3,7 @@ name: Rhino.Widget.$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 # set agents pool (Default for local agent)
 pool:
-  name: 'Azure Pipelines'
+  name: 'windows-latest'
 
 steps:
 # extract build version from Build.BuildNumber parameter and pass it as Build.Version
