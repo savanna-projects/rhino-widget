@@ -25,6 +25,15 @@ steps:
       # set value
       Write-Host "##vso[task.setvariable variable=Build.Version]$version"
 
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'src/js'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip'
+    replaceExistingArchive: true
+    verbose: true
+
 - task: GitHubRelease@1
   displayName: 'create GitHub tag'
   inputs:
@@ -36,6 +45,6 @@ steps:
     tag: 'v$(Build.Version)'
     title: 'Production v$(Build.Version)'
     releaseNotesSource: 'inline'
-    assets: '$(build.artifactstagingdirectory)\$(Build.BuildNumber)\$(Build.BuildNumber).zip'
+    assets: '$(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
