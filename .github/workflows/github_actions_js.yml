@@ -1,0 +1,26 @@
+name: Rhino Widget - CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  pack:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: tag release
+      uses: mathieudutour/github-tag-action@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        create_annotated_tag: true
+
+    - uses: meeDamian/github-release@2.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.new_tag }}
+        name: ${{ env.new_tag }}
+        files:
+          src/js/
