@@ -1,0 +1,26 @@
+{
+  "name": "Rhino Steps Recorder and A.L.M Integrator",
+  "manifest_version": 2,
+  "version": "0.0.0.5",
+  "description": "Allows the creation of test cases and integrate them into an Application Life Cycle Management of your choice",
+  "permissions": [ "declarativeContent", "storage", "contextMenus", "tabs", "<all_urls>" ],
+  "background": {
+    "scripts": [ "js/background.js" ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_popup": "user-interface/popup.html",
+    "default_icon": {
+      "16": "images/settings16.png",
+      "32": "images/settings32.png",
+      "48": "images/settings48.png",
+      "128": "images/settings128.png"
+    }
+  },
+  "icons": {
+    "16": "images/settings16.png",
+    "32": "images/settings32.png",
+    "48": "images/settings48.png",
+    "128": "images/settings128.png"
+  }
+}
