@@ -10,12 +10,21 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
 steps:
+# extract build version from Build.BuildNumber parameter and pass it as Build.Version
+- task: PowerShell@2
+  displayName: 'parse build version for git-hub tag'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # setup
+      #
+      [regex]$pattern = '(\d+.?)+'
+      $version        = $pattern.Matches('$(Build.BuildNumber)') | foreach-object {$_.Value}      
+      #
+      # set value
+      Write-Host "##vso[task.setvariable variable=Build.Version]$version"
+
 - task: GitHubRelease@1
   displayName: 'create GitHub tag'
   inputs:
