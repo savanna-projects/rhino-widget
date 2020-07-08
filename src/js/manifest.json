@@ -3,6 +3,7 @@
   "manifest_version": 2,
   "version": "0.0.0.5",
   "description": "Allows the creation of test cases and integrate them into an Application Life Cycle Management of your choice",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm6z5pmNJF2iO3u5igI+l/T7Gjm2cX23nmFZ2OsglJZGKccdH8wy19UE3buaWASr70rJUhsBFU1ofKcE89zgHXA3tIM/IznK8B4NTG3V2ctTqczRZ0PV6BP52zerfe9iJjz6iRQ5E67YrAPPKszyo5foxSUMGYiZpT15cdb1lNfIH1G3MSKpbyvYhfQEzfQzjA+5ax7RMuXgG/RexVXckmcWU9jKXcKIlQlOjySg7sboWxoTMMyc4z4cNFVAAl15G8z+Vo3rit1CGpx1o+oxDl/2d9Kbv9pDt4yVdoaan3IwBwhyzf4PJvdthOsAdqyp48wX0p2iUfGc3MBoitJc7jwIDAQAB",
   "permissions": [ "declarativeContent", "storage", "contextMenus", "tabs", "<all_urls>" ],
   "background": {
     "scripts": [ "js/background.js" ],
@@ -22,5 +23,12 @@
     "32": "images/settings32.png",
     "48": "images/settings48.png",
     "128": "images/settings128.png"
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://localhost/*",
+      "*://rhino-widget.azurewebsites.net/*"
+    ],
+    "accepts_tls_channel_id": false
   }
 }
