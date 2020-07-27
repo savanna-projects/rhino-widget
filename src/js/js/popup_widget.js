@@ -21,7 +21,12 @@
     var last_background = "";
     var last_element = null;
     var is_fixate = false;
-    var port = chrome.runtime.connect({name: "elementRecorder"});
+    var port = chrome.runtime.connect({ name: "elementRecorder" });
+
+    // load all event listeners into this document
+    document.addEventListener('keyup', keyupHandler);
+    document.addEventListener('mouseover', mouseoverHandler);
+    document.addEventListener('mouseout', mouseoutHandler);
 
     // #region *** event handlers   ***
     //
@@ -263,11 +268,6 @@
         if (!isProxy || isChrome) {
             return;
         }
-
-        // load all event listeners into this document
-        document.addEventListener('keyup', keyupHandler);
-        document.addEventListener('mouseover', mouseoverHandler);
-        document.addEventListener('mouseout', mouseoutHandler);
     });
 }
 

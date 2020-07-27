@@ -15,12 +15,20 @@
         </div>
 
         <div class="form-group">
-            <button type="button" class="btn btn-primary btn-sm" id="connect">Connect</button>
+            <button type="button" class="btn btn-primary btn-sm" id="connect_recorder">Connect Recorder</button>
             <button type="button" class="btn btn-primary btn-sm" id="button_disconnect">Disconnect</button>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input small" id="is_local" />
                 <label class="custom-control-label small mt-2" for="is_local">Connect to Local Server</label>
             </div>
+        </div>
+        <div class="form-group">
+            <label class="small" for="ignore_list">Ignore List (each address on a seperate line)</label>
+            <textarea class="form-control form-control-sm" style="font-family: Consolas, Lucida Console, monospace; white-space: pre;" id="ignore_list" rows="5">
+http://localhost:8080
+            </textarea>
+        </div>
+        <div class="form-group">
             <small class="form-text text-muted mt-4">
                 Find us on Git Hub <a href="https://github.com/gravity-api/gravity-actions/wiki" title="Dave Gandy">https://github.com/gravity-api/gravity-actions/wiki</a>
             </small>
