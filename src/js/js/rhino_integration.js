@@ -5,12 +5,21 @@
  * Summary. Entry point for this injected scripts pipeline
  */
 function main() {
-    // inject XRay
-    waitAndInject("div.aui-item.issue-main-column", null);
+    // setup
+    var data = {
+        endpoint: null,
+        settings: null
+    };
 
-    // setup conditions
-    console.log('Rhino X-Ray Integration.');
-    
+    // try to load current
+    chrome.storage.sync.get(['last_endpoint'], function (endpoint) {
+        data.endpoint = endpoint
+        chrome.storage.sync.get(['widget_settings'], function (settings) {
+            data.settings = settings;
+            waitAndInject("div.aui-item.issue-main-column", data)
+            console.log('Rhino: X-Ray integration applied.');
+        });
+    });
 }
 
 /**
@@ -26,7 +35,6 @@ function getKnownIntegration() {
 
     // iterate
     for (var key in knownIntegrations) {
-        console.log("iteration");
         var isKnown = isKnownIntegration(knownIntegrations[key]);
 
         if (isKnown) {
@@ -52,37 +60,17 @@ function isKnownIntegration(xpath) {
 }
 
 /**
- * Summary. Get the last settings saved by the user
- *
- * @returns {any} Last settings saved by the user
- */
-function getSettings() {
-    // setup
-    var data = {};
-
-    // try to load current
-    chrome.storage.sync.get(['last_endpoint'], function (result) {
-        data.endpoint = result
-        chrome.storage.sync.get(['widget_settings'], function (result) {
-            data.settings = result;
-        });
-    });
-
-    // get settings
-    return data;
-}
-
-/**
  * Summary. Get an HTML which will be injected into the integrated application
  *
- * @param {any} widgetSettings Last settings saved by the user
+ * @param   {any} settings Last settings saved by the user
  *
- * @returns {any}              Ready to be injected HTML
+ * @returns {any}          Ready to be injected HTML
  */
-function injectJiraXRay(widgetSettings) {
+function injectJiraXRay() {
     var HTML = `        
         <div id="rh_rhino_module" class="module toggle-wrap collapsed">
-        <input type="hidden" id="rh_ui_flag" value="injected" />
+        <input type="hidden" id="rh_ui_flag" value="true" />
+        <input type="hidden" id="rh_ui_data" value="false" />
             <div id="rh_rhino_module_heading" class="mod-header">
                 <ul class="ops"></ul>
                 <button class="aui-button toggle-title" aria-label="Rhino Automation" aria-controls="rh_rhino_module" aria-expanded="false" resolved="">
@@ -138,13 +126,22 @@ function injectJiraXRay(widgetSettings) {
                                <input id="rh_open_close_bugs" type="checkbox"/>
                            </span>
                        </div>
-                   </li>                                                
+                   </li>
+
+                   <li class="item new">
+                       <div class="wrap">
+                           <strong class="name" title="The maximum number of tests that will be executed in parallel.">Max Parallel Execution:</strong>
+                           <span class="value" style="width: 95%">
+                               <input id="rh_max_parallel" value="1" type="number" class="aui-button" style="width: 100%"/>
+                           </span>
+                       </div>
+                   </li>
 
                   <li class="item full-width">
                       <div class="wrap">
                           <strong class="name" title="The capabilities of the selected platform as supported by the respective vendor.">Driver Capabilities:</strong>
                           <span class="value" style="width: 100%">
-                              <textarea class="aui-button" id="rh_capabilities" style="width: 100%; min-height: 130px;"></textarea>
+                              <textarea class="aui-button" id="rh_capabilities" style="width: 100%; min-height: 130px; font-family: monospace;"></textarea>
                           </span>
                       </div>
                   </li>
@@ -153,6 +150,9 @@ function injectJiraXRay(widgetSettings) {
                       <div class="wrap">
                           <span class="value">
                               <button class="aui-button aui-button-primary" id="rh_run_automation" data-rhino="false">Run Automation</textarea>
+                          </span>
+                          <span class="value">
+                              <button class="aui-button aui-button-primary" id="rh_reload_tests" data-rhino="false">Reload Test Cases</textarea>
                           </span>
                       </div>
                   </li>
@@ -167,6 +167,31 @@ function injectJiraXRay(widgetSettings) {
     // inject
     var container = document.querySelector("div.aui-item.issue-main-column");
     container.insertAdjacentElement('afterbegin', node);
+    document.getElementById('rh_reload_tests').addEventListener('click', collectTestCases, false);
+
+    // collect
+    collectTestCases()
+}
+
+function collectTestCases() {
+    // extract issue id
+    var id = document.title.match("(?<=\\[).*?(?=])");
+
+    // setup
+    var testCases = [];
+
+    // validate
+    if (id.length === 0) {
+        return testCases;
+    }
+
+    // add to collection
+    testCases.push(id[0]);
+
+    // save
+    chrome.storage.sync.set({ tests_repository: testCases }, () => {
+        console.log("Rhino: Test entity loaded.");
+    });
 }
 
 function HtmlToDom(html) {
@@ -176,6 +201,69 @@ function HtmlToDom(html) {
 
     // return first child as DOM element
     return container;
+}
+
+function setConfiguration() {
+    var integration_configuration = {
+        testsRepository: [],
+        elementsRepository: [],
+        tolerance: 0,
+        priority: 5,
+        severity: 5,
+        attempts: 1,
+        failOnException: false,
+        saveRequests: true,
+        connector: "jira",
+        unattached: false,
+        errorOnExitCode: 10,
+        engineConfiguration: {
+            maxParallel: 5,
+            elementSearchTimeout: 15000,
+            pageLloadTimeout: 60000
+        },
+        screenshotsConfiguration: {
+            returnScreenshots: true,
+            onExceptionOnly: false,
+            keepOriginal: true
+        },
+        driverParameters: {
+            driver: "",
+            driverBinaries: "",
+            capabilities: {}
+        },
+        jiraConfiguration: {
+            collection: "",
+            user: "",
+            password: "",
+            project: "",
+            attachScreenshot: true,
+            isCloud: false
+        },
+        credentials: {
+            userName: "",
+            password: ""
+        }
+    }
+    chrome.storage.sync.get(['widget_settings'], function (result) {
+        if (typeof (result.widget_settings) === 'undefined') {
+            console.info("Rhino: No settings were saved for this setup. Please save settings under Rhino Widget.");
+            return;
+        }
+
+        // apply settings: credentials
+        integration_configuration.credentials.userName = result.widget_settings.rhino_options.rhino_password;
+        integration_configuration.credentials.password = result.widget_settings.rhino_options.rhino_user_name;
+
+        // apply settings: jira
+        integration_configuration.jiraConfiguration.collection = result.widget_settings.connector_options.server_address;
+        integration_configuration.jiraConfiguration.user = result.widget_settings.connector_options.user_name;
+        integration_configuration.jiraConfiguration.password = result.widget_settings.connector_options.password;
+        integration_configuration.jiraConfiguration.project = result.widget_settings.connector_options.project;
+
+        chrome.storage.sync.set({ i_c: integration_configuration }, function (result) {
+            console.log("Rhino: Integration configuration " + result + " saved.")
+        });
+    });
 }
 
 // TODO: allow to pass injection method
@@ -195,7 +283,8 @@ function waitAndInject(containerSelector, settings) {
                     if (!isKnown) {
                         continue;
                     }
-                    injectJiraXRay(settings);
+                    injectJiraXRay();
+                    setConfiguration();
                     return;
                 }
             }
@@ -203,7 +292,7 @@ function waitAndInject(containerSelector, settings) {
     });
     observer.observe(document.body, {
         childList: true,
-        subtree: false,
+        subtree: true,
         attributes: false,
         characterData: false
     })

@@ -18,8 +18,14 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
     // integration scripts
     var interval = setInterval(function () {
         if (changeInfo.status === 'complete') {
-            clearInterval(interval);            
-            chrome.tabs.executeScript(tabId, { file: "js/popup_widget.js" });
+            clearInterval(interval);
+
+            // 1. execute recording scripts if connected
+            chrome.storage.sync.get(['is_connected'], function (result) {
+                if (typeof (result.is_connected) !== 'undefined' && result.is_connected) {
+                    chrome.tabs.executeScript(tabId, { file: "js/popup_widget.js" });
+                }
+            });            
 
             // 1. execute integration scripts (static HTML validation and injection)
             // 2. execute integration functional scripts (events and request)

@@ -29,9 +29,10 @@ function main() {
         }
         endpointElement.value = endpoint
 
-        // save
+        // connect
         chrome.storage.sync.set({ last_endpoint: endpoint }, () => {
             callWidget();
+            chrome.storage.sync.set({ is_connected: true });
         });
     }
 
@@ -74,17 +75,7 @@ function main() {
     document.getElementById("button_disconnect").addEventListener("click", disconnectHandler, false);
 
     function disconnectHandler(e) {
-        // constants
-        const TITLE = "Rhino Widget - Action Settings Page - Cloud Native - Automation.Kdd.Agent";
-
-        // settings data to save
-        var s = {
-            endpoint: ""
-        };
-
-        chrome.storage.sync.set({ settings: s }, () => {
-            console.log('Saved connection settings: [' + JSON.stringify(s) + ']');
-
+        chrome.storage.sync.set({ is_connected: false }, () => {
             // refresh tabs (remove all injected scripts)
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 tabs.forEach(tab => {
