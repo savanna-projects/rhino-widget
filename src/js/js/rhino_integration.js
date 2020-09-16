@@ -17,7 +17,6 @@ function main() {
         chrome.storage.sync.get(['widget_settings'], function (settings) {
             data.settings = settings;
             waitAndInject("div.aui-item.issue-main-column", data)
-            console.log('Rhino: X-Ray integration applied.');
         });
     });
 }
@@ -29,16 +28,20 @@ function main() {
  */
 function getKnownIntegration() {
     // static integrations collection
-    var knownIntegrations = {
-        jiraXRay: "(//li[.//strong[.='Type:'] and .//span[contains(.,'Test') or contains(.,'Test Set')]] and (//*[.='Test Details'] or //*[.='Tests']))"
-    }
+    var knownIntegrations = [
+        {
+            path: "(//li[.//strong[.='Type:'] and .//span[contains(.,'Test') or contains(.,'Test Set')]] and (//*[.='Test Details'] or //*[.='Tests']))",
+            injector: injectorXRayOnPrem,
+            connector: "connector_xray"
+        }
+    ]
 
     // iterate
-    for (var key in knownIntegrations) {
-        var isKnown = isKnownIntegration(knownIntegrations[key]);
+    for (var i = 0; i < knownIntegrations.length; i++) {
+        var isKnown = isKnownIntegration(knownIntegrations[i].path);
 
         if (isKnown) {
-            return key.toString();
+            return knownIntegrations[i];
         }
     }
 
@@ -66,7 +69,7 @@ function isKnownIntegration(xpath) {
  *
  * @returns {any}          Ready to be injected HTML
  */
-function injectJiraXRay() {
+function injectorXRayOnPrem() {
     var HTML = `        
         <div id="rh_rhino_module" class="module toggle-wrap collapsed">
         <input type="hidden" id="rh_ui_flag" value="true" />
@@ -141,7 +144,16 @@ function injectJiraXRay() {
                       <div class="wrap">
                           <strong class="name" title="The capabilities of the selected platform as supported by the respective vendor.">Driver Capabilities:</strong>
                           <span class="value" style="width: 100%">
-                              <textarea class="aui-button" id="rh_capabilities" style="width: 100%; min-height: 130px; font-family: monospace;"></textarea>
+                              <textarea class="aui-button" id="rh_driver_capabilities" style="width: 100%; min-height: 130px; font-family: monospace;"></textarea>
+                          </span>
+                      </div>
+                  </li>
+
+                  <li class="item full-width">
+                      <div class="wrap">
+                          <strong class="name" title="The options of the selected platform as supported by the respective vendor.">Driver Options:</strong>
+                          <span class="value" style="width: 100%">
+                              <textarea class="aui-button" id="rh_driver_options" style="width: 100%; min-height: 130px; font-family: monospace;"></textarea>
                           </span>
                       </div>
                   </li>
@@ -167,13 +179,13 @@ function injectJiraXRay() {
     // inject
     var container = document.querySelector("div.aui-item.issue-main-column");
     container.insertAdjacentElement('afterbegin', node);
-    document.getElementById('rh_reload_tests').addEventListener('click', collectTestCases, false);
+    document.getElementById('rh_reload_tests').addEventListener('click', collectXrayTestCases, false);
 
     // collect
-    collectTestCases()
+    collectXrayTestCases()
 }
 
-function collectTestCases() {
+function collectXrayTestCases() {
     // extract issue id
     var id = document.title.match("(?<=\\[).*?(?=])");
 
@@ -194,6 +206,8 @@ function collectTestCases() {
     });
 }
 
+
+// INJECTOR UTILITIES
 function HtmlToDom(html) {
     // set container
     var container = document.createElement('div');
@@ -203,47 +217,54 @@ function HtmlToDom(html) {
     return container;
 }
 
-function setConfiguration() {
+function setConfiguration(integration) {
     var integration_configuration = {
+        name: "Rhino Automation",
         testsRepository: [],
-        elementsRepository: [],
-        tolerance: 0,
-        priority: 5,
-        severity: 5,
-        attempts: 1,
-        failOnException: false,
-        saveRequests: true,
-        connector: "jira",
-        unattached: false,
-        errorOnExitCode: 10,
+        driverParameters: [
+            {
+                driver: "",
+                driverBinaries: "",
+                capabilities: {},
+                options: {}
+            }
+        ],
+        connector: integration.connector,
+        authentication: {
+            password: "",
+            userName: ""
+        },
         engineConfiguration: {
             maxParallel: 5,
-            elementSearchTimeout: 15000,
-            pageLloadTimeout: 60000
+            elementSearchingTimeout: 15000,
+            pageLoadTimeout: 60000,
+            retrunExceptions: true,
+            returnPerformancePoints: true,
+            returnEnvironment: true,
+            terminateOnAssertFailure: false
         },
         screenshotsConfiguration: {
-            returnScreenshots: true,
-            onExceptionOnly: false,
-            keepOriginal: true
+            "keepOriginal": false,
+            "returnScreenshots": true,
+            "onExceptionOnly": false
         },
-        driverParameters: {
-            driver: "",
-            driverBinaries: "",
-            capabilities: {}
+        reportConfiguration: {
+            localReport: false,
+            addGravityData: false
         },
-        jiraConfiguration: {
+        providerConfiguration: {
             collection: "",
-            user: "",
             password: "",
+            user: "",
             project: "",
-            attachScreenshot: true,
-            isCloud: false
-        },
-        credentials: {
-            userName: "",
-            password: ""
+            bugManager: false,
+            capabilities: {
+                bucketSize: 15,
+                dryRun: true
+            }
         }
     }
+
     chrome.storage.sync.get(['widget_settings'], function (result) {
         if (typeof (result.widget_settings) === 'undefined') {
             console.info("Rhino: No settings were saved for this setup. Please save settings under Rhino Widget.");
@@ -251,14 +272,14 @@ function setConfiguration() {
         }
 
         // apply settings: credentials
-        integration_configuration.credentials.userName = result.widget_settings.rhino_options.rhino_password;
-        integration_configuration.credentials.password = result.widget_settings.rhino_options.rhino_user_name;
+        integration_configuration.authentication.userName = result.widget_settings.rhino_options.rhino_user_name;
+        integration_configuration.authentication.password = result.widget_settings.rhino_options.rhino_password;
 
-        // apply settings: jira
-        integration_configuration.jiraConfiguration.collection = result.widget_settings.connector_options.server_address;
-        integration_configuration.jiraConfiguration.user = result.widget_settings.connector_options.user_name;
-        integration_configuration.jiraConfiguration.password = result.widget_settings.connector_options.password;
-        integration_configuration.jiraConfiguration.project = result.widget_settings.connector_options.project;
+        // apply settings: automation provider
+        integration_configuration.providerConfiguration.collection = result.widget_settings.connector_options.server_address;
+        integration_configuration.providerConfiguration.user = result.widget_settings.connector_options.user_name;
+        integration_configuration.providerConfiguration.password = result.widget_settings.connector_options.password;
+        integration_configuration.providerConfiguration.project = result.widget_settings.connector_options.project;
 
         chrome.storage.sync.set({ i_c: integration_configuration }, function (result) {
             console.log("Rhino: Integration configuration " + result + " saved.")
@@ -266,7 +287,6 @@ function setConfiguration() {
     });
 }
 
-// TODO: allow to pass injection method
 function waitAndInject(containerSelector, settings) {
     var observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
@@ -279,12 +299,13 @@ function waitAndInject(containerSelector, settings) {
                 var isContainer = document.querySelector(containerSelector) !== null;
 
                 if (isContainer && !isFlag) {
-                    var isKnown = getKnownIntegration() !== "-1";
+                    var integration = getKnownIntegration();
+                    var isKnown = integration !== "-1";
                     if (!isKnown) {
                         continue;
                     }
-                    injectJiraXRay();
-                    setConfiguration();
+                    integration.injector();
+                    setConfiguration(integration);
                     return;
                 }
             }
