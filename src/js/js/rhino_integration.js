@@ -229,7 +229,6 @@ function setConfiguration(integration) {
                 options: {}
             }
         ],
-        connector: integration.connector,
         authentication: {
             password: "",
             userName: ""
@@ -252,17 +251,22 @@ function setConfiguration(integration) {
             localReport: false,
             addGravityData: false
         },
-        providerConfiguration: {
+        connectorConfiguration: {
+            connector: integration.connector,
             collection: "",
             password: "",
             user: "",
             project: "",
-            bugManager: false,
-            capabilities: {
-                bucketSize: 15,
-                dryRun: true
-            }
-        }
+            bugManager: false
+        },
+        capabilities: {}
+    }
+
+    // setup capabilities
+    var field = integration.connector + ":options";
+    integration_configuration.capabilities[field] = {
+        bucketSize: 15,
+        dryRun: true
     }
 
     chrome.storage.sync.get(['widget_settings'], function (result) {
@@ -276,10 +280,10 @@ function setConfiguration(integration) {
         integration_configuration.authentication.password = result.widget_settings.rhino_options.rhino_password;
 
         // apply settings: automation provider
-        integration_configuration.providerConfiguration.collection = result.widget_settings.connector_options.server_address;
-        integration_configuration.providerConfiguration.user = result.widget_settings.connector_options.user_name;
-        integration_configuration.providerConfiguration.password = result.widget_settings.connector_options.password;
-        integration_configuration.providerConfiguration.project = result.widget_settings.connector_options.project;
+        integration_configuration.connectorConfiguration.collection = result.widget_settings.connector_options.server_address;
+        integration_configuration.connectorConfiguration.user = result.widget_settings.connector_options.user_name;
+        integration_configuration.connectorConfiguration.password = result.widget_settings.connector_options.password;
+        integration_configuration.connectorConfiguration.project = result.widget_settings.connector_options.project;
 
         chrome.storage.sync.set({ i_c: integration_configuration }, function (result) {
             console.log("Rhino: Integration configuration " + result + " saved.")
