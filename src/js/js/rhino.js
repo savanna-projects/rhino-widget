@@ -18,63 +18,6 @@ function main() {
     });
 
     /**
-     * Summary. Executes a post request with onSuccess callback
-     * 
-     * @param {any} routing   Endpoint to which send the request
-     * @param {any} data      Data Object to pass with this request as body
-     * @param {any} onSuccess Success callback action
-     * @param {any} onAlways  Finalize callback action, will always be executed
-     */
-    function post(routing, data, onSuccess, onAlways) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", routing, true);
-
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/json");
-
-        // Call a function when the state changes.
-        xhr.onreadystatechange = function () {
-            if (this.readyState === XMLHttpRequest.DONE && this.status < 400) {
-                console.log(xhr.response);
-                //onSuccess(xhr.response)
-            }
-            else {
-                console.log("Error [" + xhr.statusText + "] while calling the Web API on [" + routing + "]");
-            }
-        }
-
-        xhr.send(data);
-        // xhr.send(new Int8Array());
-        // xhr.send(document);
-
-
-
-
-
-
-
-
-
-
-
-        //$.ajax({
-        //    url: routing,
-        //    type: "POST",
-        //    dataType: "json",
-        //    contentType: "application/json; charset=utf-8",
-        //    data: JSON.stringify(data),
-
-        //    success: (data) => {
-        //        onSuccess(data);
-        //    },
-        //    error: (e) => {
-        //        console.log(e);
-        //        console.log("Error while calling the Web API on [" + routing + "]");
-        //    }
-        //}).always(onAlways);
-    }
-
-    /**
      * Summary. Get an HTML which will be injected into the integrated application
      *
      * @param   {any} settings Last settings saved by the user
@@ -169,9 +112,13 @@ function send() {
 
             chrome.storage.sync.get(['i_c'], function (configuration) {
                 // collect from UI
-                configuration.i_c.providerConfiguration.capabilities.dryRun = (!document.getElementById("rh_create_execution").checked).toString();
-                configuration.i_c.providerConfiguration.bugManager = document.getElementById("rh_open_close_bugs").checked;
-                var maxParallelValue = document.getElementById("rh_max_parallel").value;
+                var isDryRun = (!document.getElementById("rh_create_execution").checked).toString();
+                var isBugManager = document.getElementById("rh_open_close_bugs").checked;
+                var maxParallel = document.getElementById("rh_max_parallel").value;
+
+                configuration.i_c.capabilities[configuration.i_c.connectorConfiguration.connector + ":options"].dryRun = isDryRun;
+                configuration.i_c.connectorConfiguration.bugManager = isBugManager;
+                var maxParallelValue = maxParallel;
                 var maxParallelNum = parseInt(maxParallelValue);
                 var maxParallel = maxParallelNum <= 0 || isNaN(maxParallelNum) ? 1 : maxParallelNum;
 
@@ -188,27 +135,45 @@ function send() {
                         return;
                     }
 
-                    post(playbackEndpoint, configuration.i_c, (testRun) => {
+                    // disable while running
+                    var rhAutomation = document.getElementById("rh_run_automation");
+                    rhAutomation.disabled = true;
+                    rhAutomation.innerText = "Running..."
+
+                    // call backs
+                    onSuccess = (testRun) => {
+                        rhAutomation.innerText = "Run Automation"
+                        rhAutomation.disabled = false;                        
                         console.log(testRun);
                         console.info("Rhino: Test cases execution completed.");
-                    });
+                    }
+                    always = () => {
+                        rhAutomation.disabled = false;
+                        rhAutomation.innerText = "Run Automation"
+                    }
+
+                    post(playbackEndpoint, configuration.i_c, onSuccess, always);
                 });
             });
         });
     });
 }
 
-function post(routing, data, onSuccess) {
+function post(routing, data, onSuccess, always) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", routing, true);
 
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onreadystatechange = function () { // Call a function when the state changes.
+    // Call a function when the state changes.
+    xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             var testRun = JSON.parse(this.responseText);
             onSuccess(testRun);
+        }
+        if (this.readyState = XMLHttpRequest.DONE && this.status !== 200) {
+            always()
         }
     }
     xhr.send(JSON.stringify(data));
