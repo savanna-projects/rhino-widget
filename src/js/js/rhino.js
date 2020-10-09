@@ -18,63 +18,6 @@ function main() {
     });
 
     /**
-     * Summary. Executes a post request with onSuccess callback
-     * 
-     * @param {any} routing   Endpoint to which send the request
-     * @param {any} data      Data Object to pass with this request as body
-     * @param {any} onSuccess Success callback action
-     * @param {any} onAlways  Finalize callback action, will always be executed
-     */
-    function post(routing, data, onSuccess, onAlways) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", routing, true);
-
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/json");
-
-        // Call a function when the state changes.
-        xhr.onreadystatechange = function () {
-            if (this.readyState === XMLHttpRequest.DONE && this.status < 400) {
-                console.log(xhr.response);
-                //onSuccess(xhr.response)
-            }
-            else {
-                console.log("Error [" + xhr.statusText + "] while calling the Web API on [" + routing + "]");
-            }
-        }
-
-        xhr.send(data);
-        // xhr.send(new Int8Array());
-        // xhr.send(document);
-
-
-
-
-
-
-
-
-
-
-
-        //$.ajax({
-        //    url: routing,
-        //    type: "POST",
-        //    dataType: "json",
-        //    contentType: "application/json; charset=utf-8",
-        //    data: JSON.stringify(data),
-
-        //    success: (data) => {
-        //        onSuccess(data);
-        //    },
-        //    error: (e) => {
-        //        console.log(e);
-        //        console.log("Error while calling the Web API on [" + routing + "]");
-        //    }
-        //}).always(onAlways);
-    }
-
-    /**
      * Summary. Get an HTML which will be injected into the integrated application
      *
      * @param   {any} settings Last settings saved by the user
