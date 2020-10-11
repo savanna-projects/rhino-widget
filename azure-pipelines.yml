@@ -41,7 +41,7 @@ steps:
     script: |
       # set new version
       $manifest = (Get-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json')
-      $manifest -replace '(?<="version":\s+")(\d+\.?)+', '$(Build.Version)'
+      $manifest = $manifest -replace '(?<="version":\s+")(\d+\.?)+', '$(Build.Version)'
       #
       # apply
       Set-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json' -Value $manifest -Force
