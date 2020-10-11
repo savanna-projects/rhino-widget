@@ -40,12 +40,11 @@ steps:
     targetType: 'inline'
     script: |
       # set new version
-      $manifest         = (Get-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json') | ConvertFrom-Json
-      $manifest.version = "$(Build.Version)"
-      $content          = $manifest | ConvertTo-Json
+      $manifest = (Get-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json')
+      $manifest -replace '(?<="version":\s+")(\d+\.?)+', '$(Build.Version)'
       #
       # apply
-      Set-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json' -Value $content -Force
+      Set-Content -Path '$(Build.ArtifactStagingDirectory)\src\js\manifest.json' -Value $manifest -Force
 
 - task: ArchiveFiles@2
   inputs:
