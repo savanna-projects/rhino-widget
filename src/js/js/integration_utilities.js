@@ -72,7 +72,7 @@ function setConfiguration(integration) {
 
         // apply settings: automation provider
         integration_configuration.connectorConfiguration.collection = result.widget_settings.connector_options.server_address;
-        integration_configuration.connectorConfiguration.user = result.widget_settings.connector_options.user_name;
+        integration_configuration.connectorConfiguration.userName = result.widget_settings.connector_options.user_name;
         integration_configuration.connectorConfiguration.password = result.widget_settings.connector_options.password;
         integration_configuration.connectorConfiguration.project = result.widget_settings.connector_options.project;
 
