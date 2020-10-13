@@ -46,7 +46,7 @@ function setConfiguration(integration) {
             connector: integration.connector,
             collection: "",
             password: "",
-            user: "",
+            userName: "",
             project: "",
             bugManager: false
         },
