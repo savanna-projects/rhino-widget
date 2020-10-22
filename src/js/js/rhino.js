@@ -176,7 +176,11 @@ function post(routing, data, onSuccess, always) {
             always()
         }
     }
-    xhr.send(JSON.stringify(data));
+    try {
+        xhr.send(JSON.stringify(data));
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 main();
