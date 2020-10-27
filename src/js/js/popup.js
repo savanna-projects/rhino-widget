@@ -1,4 +1,4 @@
-﻿const TITLE = "Rhino Widget - Action Settings Page - Cloud Native - Automation.Kdd.Agent";
+﻿const TITLE = "Rhino Widget - nygGKTtD";
 var endpointElement = document.getElementById("endpoint");
 
 function main() {

@@ -1,6 +1,8 @@
-﻿function main() {
+﻿const TITLE = "Rhino Widget - nygGKTtD";
+
+function main() {
     // validation
-    var isRhino = document.title === "Rhino Widget - Action Settings Page - Cloud Native - Automation.Kdd.Agent";
+    var isRhino = document.title === TITLE;
     if (isRhino) {
         chrome.storage.onChanged.addListener((changes, namespace) => {
             for (var key in changes) {
