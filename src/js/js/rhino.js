@@ -114,13 +114,12 @@ function send() {
                 // collect from UI
                 var isDryRun = (!document.getElementById("rh_create_execution").checked).toString();
                 var isBugManager = document.getElementById("rh_open_close_bugs").checked;
-                var maxParallel = document.getElementById("rh_max_parallel").value;
+                var maxParallelValue = document.getElementById("rh_max_parallel").value;
 
-                configuration.i_c.capabilities[configuration.i_c.connectorConfiguration.connector + ":options"].dryRun = isDryRun;
+                configuration.i_c.capabilities.dryRun = isDryRun;
                 configuration.i_c.connectorConfiguration.bugManager = isBugManager;
-                var maxParallelValue = maxParallel;
                 var maxParallelNum = parseInt(maxParallelValue);
-                var maxParallel = maxParallelNum <= 0 || isNaN(maxParallelNum) ? 1 : maxParallelNum;
+                maxParallel = maxParallelNum <= 0 || isNaN(maxParallelNum) ? 1 : maxParallelNum;
 
                 configuration.i_c.testsRepository = uiSettings.tests_repository;
                 configuration.i_c.driverParameters[0].driver = uiSettings.driver;
@@ -172,7 +171,7 @@ function post(routing, data, onSuccess, always) {
             var testRun = JSON.parse(this.responseText);
             onSuccess(testRun);
         }
-        if (this.readyState = XMLHttpRequest.DONE && this.status !== 200) {
+        if (this.readyState === XMLHttpRequest.DONE && this.status !== 200) {
             always()
         }
     }

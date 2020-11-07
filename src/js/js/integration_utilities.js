@@ -50,14 +50,10 @@ function setConfiguration(integration) {
             project: "",
             bugManager: false
         },
-        capabilities: {}
-    }
-
-    // setup capabilities
-    var field = integration.connector + ":options";
-    integration_configuration.capabilities[field] = {
-        bucketSize: 15,
-        dryRun: true
+        capabilities: {
+            bucketSize: 15,
+            dryRun: true
+        }
     }
 
     chrome.storage.sync.get(['widget_settings'], function (result) {
@@ -87,7 +83,8 @@ function getKnownIntegration() {
     // static integrations collection
     var knownIntegrations = [
         getXRayOnPrem(),
-        getXRayCloud()
+        getXRayCloud(),
+        getGurockCloud()
     ]
 
     // iterate
@@ -111,16 +108,21 @@ function getKnownIntegration() {
 function waitAndInject() {
     var observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
+            var isFlag = document.getElementById("rh_ui_flag") !== null; // already injected
+            if (isFlag) {
+                return;
+            }
+
             if (!mutation.addedNodes) {
                 return
             }
 
-            for (var i = 0; i < mutation.addedNodes.length; i++) {
-                var integration = getKnownIntegration();
-                var isFlag = document.getElementById("rh_ui_flag") !== null;
+            var index = mutation.addedNodes.length === 0 ? -1 : 0; // handles 0 length mutation
+            for (var i = index; i < mutation.addedNodes.length; i++) {
+                var integration = getKnownIntegration();                
                 var isContainer = integration !== null;
 
-                if (isContainer && !isFlag) {                    
+                if (isContainer) {                    
                     var isKnown = integration !== "-1";
                     if (!isKnown) {
                         continue;
@@ -135,7 +137,7 @@ function waitAndInject() {
     observer.observe(document.body, {
         childList: true,
         subtree: true,
-        attributes: false,
+        attributes: true,
         characterData: false
     })
 }
