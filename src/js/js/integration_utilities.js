@@ -48,11 +48,11 @@ function setConfiguration(integration) {
             password: "",
             userName: "",
             project: "",
-            bugManager: false
+            bugManager: false,
+            dryRun: true
         },
         capabilities: {
-            bucketSize: 15,
-            dryRun: true
+            bucketSize: 15
         }
     }
 

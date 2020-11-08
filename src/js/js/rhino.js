@@ -116,7 +116,7 @@ function send() {
                 var isBugManager = document.getElementById("rh_open_close_bugs").checked;
                 var maxParallelValue = document.getElementById("rh_max_parallel").value;
 
-                configuration.i_c.capabilities.dryRun = isDryRun;
+                configuration.i_c.connectorConfiguration.dryRun = isDryRun;
                 configuration.i_c.connectorConfiguration.bugManager = isBugManager;
                 var maxParallelNum = parseInt(maxParallelValue);
                 maxParallel = maxParallelNum <= 0 || isNaN(maxParallelNum) ? 1 : maxParallelNum;

@@ -112,7 +112,13 @@ function injectorGurockCloud() {
 
 function collectorGurockCloud() {
     // get test case
-    var id = "C" + window.location.href.toLowerCase().match("(?<=cases/(view|edit)/)\\d+")[0];
+    var id = window.location.href.toLowerCase().match("(?<=cases/(view|edit)/)\\d+");
+    id = id !== null && id.length > 0 ? "C" + id[0] : null;
+
+    if (typeof (id) === "undefined" || id === null || id === "") {
+        id = window.location.href.toLocaleLowerCase().match("(?<=suites/(view|edit)/)\\d+")
+        id = id !== null && id.length > 0 ? id[0] : null;
+    }
 
     // setup
     var testCases = [];
@@ -136,10 +142,12 @@ function validatorGurockCloud(integrationObject) {
     var isPath = document
         .evaluate(integrationObject.path, document, null, XPathResult.BOOLEAN_TYPE, null)
         .booleanValue;
-    var isUrl = window.location.href.toLowerCase().match('cases/(view|edit)/\\d+')
+
+    var isTestCase = window.location.href.toLowerCase().match('cases/(view|edit)/\\d+');
+    var isTestSuite = window.location.href.toLocaleLowerCase().match("(?<=suites/(view|edit)/)\\d+");
 
     // assert
-    return isPath && isUrl;
+    return isPath && (isTestCase || isTestSuite);
 }
 
 /**
