@@ -28,7 +28,7 @@ function injectorXrayOnPrem() {
                             <span class="value" style="width: 95%">
                                 <select id="rh_web_driver" class="aui-button" style="width: 100%">
                                     <option value="AndroidDriver">Android (Chrome or Native)</option>
-                                    <option value="EdgeDriver">Chromium Edge</option>
+                                    <option value="MicrosoftWebDriver">Chromium Edge</option>
                                     <option value="IEDriverServer">Internet Explorer</option>
                                     <option value="iOSDriver">iOS (Safari or Native)</option>
                                     <option value="ChromeDriver">Google Chrome</option>
