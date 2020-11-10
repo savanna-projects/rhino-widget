@@ -134,6 +134,16 @@ function send() {
                         return;
                     }
 
+                    // pass capabilites
+                    var settings_capabilities = settings.widget_settings.connector_options.capabilities
+                    var connector_capabilities = {}
+                    if (typeof (settings_capabilities) !== undefined && settings_capabilities !== null && settings_capabilities !== "") {
+                        connector_capabilities = JSON.parse(settings_capabilities)
+
+                        var key = settings.widget_settings.connector_options.connector_type + ":options";
+                        configuration.i_c.capabilities[key] = connector_capabilities;
+                    }
+
                     // disable while running
                     var rhAutomation = document.getElementById("rh_run_automation");
                     rhAutomation.disabled = true;
