@@ -11,6 +11,7 @@
     "tabs",
     "<all_urls>"
   ],
+  "options_page": "user-interface/options.html",
   "background": {
     "scripts": [
       "js/background.js"

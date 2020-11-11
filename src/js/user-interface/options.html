@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>Rhino Widget - nygGKTtD</title>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/i16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap_redbiz.min.css">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
+
+    <!-- Icomoon -->
+    <link rel="stylesheet" type="text/css" href="../css/icomoon.css">
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" type="text/css" href="../css/default.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+
+    <!-- Fonts Google -->
+    <link rel="stylesheet" type="text/css" href="../css/font-google.css">
+
+    <style type="text/css">
+        html {
+            overflow-y: scroll;
+        }
+        select, option {
+            font-weight: 500 !important;
+            font-size: 13px;
+            background: #fff;
+            color: #111 !important;
+            outline: none;
+            width: 100%;
+            padding: 12px;
+            transition: .3s;
+            height: 51px;
+        }
+        select {
+            border-radius: 5px;
+            border: 1px solid #ececec;
+            margin-top: 30px;
+        }
+        textarea {
+            font-family: "Courier New", Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader Start-->
+    <div id="preloader">
+        <div class="row loader">
+            <div class="loader-icon"></div>
+        </div>
+    </div>
+    <!-- Preloader End -->
+    <!-- Top-Bar START -->
+    <div id="top-bar" class="hidden-xs">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 col-xs-12">
+                    <div class="top-bar-welcome">
+                        <ul>
+                            <li>Rhino API - Automation Engine</li>
+                        </ul>
+                    </div>
+                    <div class="top-bar-info">
+                        <ul>
+                            <li>
+                                <i class="fa fa-globe"></i><a class="white-color" href="https://github.com/savanna-projects">Find us on GitHub</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top-Bar END -->
+    <!-- Navbar START -->
+    <header>
+        <div class="nav-wrapper">
+            <nav class="navbar navbar-default navbar-custom" data-spy="affix" data-offset-top="50">
+                <div class="container">
+                    <div class="row">
+                        <div class="section-heading center-holder">
+                            <h3>Widget Settings</h3>
+                            <div class="section-heading-line"></div>
+                            <p>Sets the widget behaviour when playback automation, create test cases and connector (integration) settings.</p>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-block">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <!-- Accordions START -->
+                    <div class="panel-group mt-40" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default accordion">
+                            <div class="panel-heading accordion-heading" role="tab" id="headingOne">
+                                <div class="clearfix">
+                                    <div class="service-block-number" style="width: auto">
+                                        <h5>Connector Settings</h5>
+                                    </div><br /><br />
+                                    <h4 class="panel-title accordion-title" style="padding-left: 3px">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                            Set Application Lifecycle Management (A.L.M) Integrations
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="false" style="height: 0px; padding-left: 2px; padding-right: 2px;">
+                                <div class="panel-body accordion-body">
+                                    <div class="comment-form">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label-sm">Connector Type</label>
+                                                <select class="form-control-sm" id="connector_type" style="margin-top:5px">
+                                                    <option value="-1"></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm">Server Address</label>
+                                                <input type="text" class="form-control-sm" id="server_address" placeholder="ALM server address (Jira, DevOps, etc.) i.e. https://myserver:8080/" style="margin-top:5px" />
+                                            </div>
+
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label-sm" style="margin-top: 15px">Project (for Jira connector use the project key)</label>
+                                                <input type="text" class="form-control-sm" id="project" style="margin-top:5px" />
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm" style="margin-top: 15px">Test suite or Test set ID</label>
+                                                <input type="text"
+                                                       class="form-control-sm"
+                                                       id="test_suite"
+                                                       placeholder="ALM server address (Jira, DevOps, etc.) i.e. https://myserver:8080/"
+                                                       style="margin-top:5px"
+                                                       title="Test suite or Test set id. This is the entity under which this test case will be created. Leave blank for text output." />
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm" style="margin-top: 15px">User Name</label>
+                                                <input type="text"
+                                                       class="form-control-sm"
+                                                       id="user_name"
+                                                       placeholder="A.L.M server user name"
+                                                       style="margin-top:5px" />
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm" style="margin-top: 15px">Password</label>
+                                                <input type="password"
+                                                       class="form-control-sm"
+                                                       id="password"
+                                                       placeholder="A.L.M server password"
+                                                       style="margin-top:5px" />
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <label style="margin-top: 15px"
+                                                       class="col-form-label col-form-label-sm"
+                                                       title="Allows to add additional connector capabilities for creating or running the current test.">Connector Capabilities (JSON formatted)</label>
+                                                <textarea class="input form-control-sm" placeholder="Connector Capabilites" id="connector_capabilities" style="margin-top:5px">{}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default accordion">
+                            <div class="panel-heading accordion-heading" role="tab" id="headingTwo">
+                                <div class="clearfix">
+                                    <div class="service-block-number" style="width: auto">
+                                        <h5>Playback Settings</h5>
+                                    </div><br /><br />
+                                    <h4 class="panel-title accordion-title" style="padding-left: 3px">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                            Set playback options such as browser type and driver capabilities
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo" aria-expanded="false" style="height: 0px; padding-left: 2px; padding-right: 2px;">
+                                <div class="panel-body accordion-body">
+                                    <div class="comment-form">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label-sm">WebDriver type</label>
+                                                <select class="form-control-sm" id="web_driver" style="margin-top:5px"></select>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm">Selenium Grid Endpoint or Drivers Folder</label>
+                                                <input type="text" class="form-control-sm" id="grid_endpoint" placeholder="http://localhost:4444/wd/hub" style="margin-top:5px" />
+                                            </div>
+
+                                            <div class="col-xs-12">
+                                                <label style="margin-top: 15px"
+                                                       class="col-form-label col-form-label-sm"
+                                                       title="Allows to add raw capabilities object into this WebDriver including vendor specific capabilities.">WebDriver Capabilities (JSON formatted)</label>
+                                                <textarea class="input form-control-sm" placeholder="WebDriver Capabilites" id="driver_capabilities" style="margin-top:5px">{}</textarea>
+                                            </div>
+
+                                            <div class="col-xs-12">
+                                                <label style="margin-top: 15px"
+                                                       class="col-form-label col-form-label-sm"
+                                                       title="Allows to add additional driver options into this WebDriver.">WebDriver Options (JSON formatted)</label>
+                                                <textarea class="form-control form-control-sm" placeholder="WebDriver Options" id="driver_options" style="margin-top:5px">{}</textarea>
+                                            </div>
+
+                                            <div class="col-xs-12">
+                                                <label style="margin-top: 15px"
+                                                       class="col-form-label col-form-label-sm"
+                                                       title="Allows to add global data source which will be applied for all tests.">Global Data Provider (JSON Array formatted)</label>
+                                                <textarea class="form-control form-control-sm" placeholder="[]" id="global_datasource" style="margin-top:5px">[]</textarea>
+                                            </div>
+
+                                            <div class="col-xs-6">
+                                                <label style="margin-top: 15px"
+                                                       class="col-form-label col-form-label-sm">3<sup>rd</sup> Party Capabilities Generator</label><br />
+                                                <a href="https://www.lambdatest.com/capabilities-generator/" target="_blank">Lambda Test</a><br />
+                                                <a href="https://www.browserstack.com/automate/capabilities" target="_blank">Browser Stack</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default accordion">
+                            <div class="panel-heading accordion-heading" role="tab" id="headingThree">
+                                <div class="clearfix">
+                                    <div class="service-block-number" style="width: auto">
+                                        <h5>Rhino Server Settings</h5>
+                                    </div><br /><br />
+                                    <h4 class="panel-title accordion-title" style="padding-left: 2px">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            Set Rhino Server credentials
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree" aria-expanded="false" style="height: 0px; padding-left: 2px; padding-right: 2px;">
+                                <div class="panel-body accordion-body">
+                                    <div class="comment-form">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm">User Name</label>
+                                                <input type="text" class="form-control-sm" id="rhino_user_name" placeholder="Your Rhino user name i.e. myUser@@rhino.com" style="margin-top:5px">
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label class="col-form-label col-form-label-sm">Password</label>
+                                                <input type="password" class="form-control-sm" id="rhino_password" placeholder="Your Rhino password" style="margin-top:5px">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordions END -->
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery -->
+    <script src="../js/jquery.min.js"></script>
+
+    <!-- Bootstrap JS-->
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- Main JS -->
+    <script src="../js/http_utilities.js"></script>
+    <script src="../js/options.js"></script>
+</body>
+</html>
