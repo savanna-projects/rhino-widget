@@ -105,8 +105,8 @@ function send() {
         var uiSettings = getUiSettings(results.tests_repository);
 
         // execute: routine
-        initConfiguration(results.i_c, uiSettings);
-        initWidgetSettings(results.widget_settings)
+        var configuration = initConfiguration(results.i_c, uiSettings);
+        initWidgetSettings(configuration, results.widget_settings)
         runConfiguration(results.last_endpoint, results.i_c);
     });
 }
@@ -157,10 +157,13 @@ function initConfiguration(configuration, uiSettings) {
     configuration.driverParameters[0].capabilities = uiSettings.driver_capabilities;
     configuration.driverParameters[0].options = uiSettings.driver_options;    
     configuration.testsRepository = uiSettings.tests_repository;
+
+    // get
+    return configuration;
 }
 
 // 3.
-function initWidgetSettings(widgetSettings) {
+function initWidgetSettings(configuration, widgetSettings) {
     // setup
     var settings_capabilities = widgetSettings.connector_options.capabilities
     var connector_capabilities = {}
@@ -175,7 +178,7 @@ function initWidgetSettings(widgetSettings) {
 
     // set
     var key = widgetSettings.connector_options.connector_type + ":options";
-    configuration.i_c.capabilities[key] = connector_capabilities;
+    configuration.capabilities[key] = connector_capabilities;
 }
 
 // 4.
