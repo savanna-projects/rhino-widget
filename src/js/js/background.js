@@ -37,7 +37,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
 });
 
 // listen to content message
-chrome.extension.onConnect.addListener(function(port) {
+chrome.extension.onConnect.addListener(function (port) {
     port.onMessage.addListener((request, sender) => {
         if (sender.name === "elementRecorder") {
             chrome.storage.sync.set({ message: request }, () => {
@@ -52,7 +52,15 @@ chrome.extension.onConnect.addListener(function(port) {
 
 // listen to web page message
 chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResponse) {
-    chrome.storage.sync.set({ widget_settings: request }, () => {
-        console.log(request);
-    });
+    if (request.type === "putSettings") {
+        chrome.storage.sync.set({ widget_settings: request.data }, () => {
+            console.log(request.data);
+        });
+    }
+
+    if (request.type === "getSettings") {
+        chrome.storage.sync.get(['widget_settings'], (data) => {
+            sendResponse(data.widget_settings);
+        });
+    }
 });
