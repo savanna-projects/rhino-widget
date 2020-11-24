@@ -24,13 +24,14 @@ function injectorXrayCloud() {
                             <strong class="name" title="Browser or platform on which this test or set will run.">Browser (Platform):</strong>
                             <span class="value" style="width: 95%">
                                 <select id="rh_web_driver" class="aui-button" style="width: 100%">
-                                    <option value="AndroidDriver">Android (Chrome or Native)</option>
-                                    <option value="EdgeDriver">Chromium Edge</option>
-                                    <option value="IEDriverServer">Internet Explorer</option>
-                                    <option value="iOSDriver">iOS (Safari or Native)</option>
-                                    <option value="ChromeDriver">Google Chrome</option>
-                                    <option value="FirefoxDriver">Mozilla Firefox</option>
-                                    <option value="SafariDriver">Safari (MAC OS)</option>
+                                    <option value="AndroidDriver">AndroidDriver</option>
+                                    <option value="ChromeDriver">ChromeDriver</option>
+                                    <option value="FirefoxDriver">FirefoxDriver</option>
+                                    <option value="IEDriverServer">IEDriverServer</option>
+                                    <option value="iOSDriver">iOSDriver</option>
+                                    <option value="MicrosoftWebDriver">MicrosoftWebDriver</option>
+                                    <option value="MockWebDriver">MockWebDriver</option>
+                                    <option value="SafariDriver">SafariDriver</option>
                                 </select>
                             </span>
                         </div>
