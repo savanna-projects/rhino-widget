@@ -3,6 +3,9 @@
 // #region *** WIDGET: repository    ***
 
 // REPOSITORY: elements
+// -- A --
+var E_AS_OS_USER = '#as_os_user'
+var E_AS_OS_USER_CHECKBOX = '#as_os_user_checkbox'
 // -- C --
 var E_CONNECTOR_CAPABILITIES = "#connector_capabilities";
 var E_CONNECTOR_TYPE = "#connector_type";
@@ -114,6 +117,10 @@ function loadAllSettings(stateObj) {
     $(E_PASSEORD).val(stateObj.connector_options.password);
     $(E_CONNECTOR_CAPABILITIES).val(stateObj.connector_options.capabilities);
 
+    var osUser = stateObj.connector_options.as_os_user;
+    $(E_AS_OS_USER).attr('value', osUser.toString());
+    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa-check-square-o' : 'fa fa-square-o');
+
     // playback options
     $(E_WEB_DRIVER).val(stateObj.playback_options.web_driver);
     $(E_GRID_ENDPOINT).val(stateObj.playback_options.grid_endpoint);
@@ -140,7 +147,6 @@ function saveSettings() {
         try {
             $(E_SETTINGS_APPLY).prop('disabled', true);
             $(E_SETTINGS_APPLY).text('Saving...');
-            port.postMessage(stateObj);
         } catch (e) {
             console.log(e);
         }
@@ -174,7 +180,8 @@ function getConnectorOptions() {
         test_suite: $(E_TEST_SUITE).val(),
         user_name: $(E_USER_NAME).val(),
         password: $(E_PASSEORD).val(),
-        capabilities: $(E_CONNECTOR_CAPABILITIES).val()
+        capabilities: $(E_CONNECTOR_CAPABILITIES).val(),
+        as_os_user: $(E_AS_OS_USER).attr('value') === "true" ? true : false
     };
 }
 
@@ -186,5 +193,27 @@ function getRhinoOptions() {
 }
 // #endregion
 
+// Utility Scripts
+function asOsUser() {
+    // setup
+    var hidden = document.querySelector(E_AS_OS_USER);
+    var checkbox = document.querySelector(E_AS_OS_USER_CHECKBOX);
+    var value = hidden.getAttribute('value');
+    var faClass = 'fa fa-square-o'
+
+    // switch
+    var newValue = value === 'true' ? 'false' : 'true';
+    hidden.setAttribute('value', newValue);
+
+    // set
+    if (typeof (newValue) !== 'undefined' && newValue === 'true') {
+        faClass = 'fa fa-check-square-o'
+    }
+
+    // set
+    checkbox.setAttribute('class', faClass);
+}
+
 document.addEventListener('DOMContentLoaded', loadSettings);
 document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
+document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);
