@@ -22,7 +22,7 @@ function main() {
 
         // get endpoint
         if ((!isEndpoint && isLocal) || isLocal) {
-            endpoint = "https://localhost:5001/"
+            endpoint = "https://localhost:9001/"
         }
         if (!isEndpoint && !isLocal) {
             endpoint = "https://rhino-widget.azurewebsites.net/"
