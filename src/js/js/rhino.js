@@ -76,7 +76,7 @@ function main() {
 }
 
 function send() {
-    chrome.storage.sync.get(['tests_repository', 'last_endpoint', 'i_c', 'widget_settings'], (results) => {
+    chrome.storage.sync.get(['tests_repository', 'last_endpoint', 'i_c', 'widget_settings', 'integration_capabilities'], (results) => {
         // setup conditions
         var isUndefined = typeof (results.tests_repository) === 'undefined';
         var isNull = results.tests_repository === null;
@@ -106,7 +106,7 @@ function send() {
 
         // execute: routine
         var configuration = initConfiguration(results.i_c, uiSettings);
-        initWidgetSettings(configuration, results.widget_settings)
+        initWidgetSettings(configuration, results.widget_settings, results.integration_capabilities)
         runConfiguration(results.last_endpoint, results.i_c);
     });
 }
@@ -163,7 +163,7 @@ function initConfiguration(configuration, uiSettings) {
 }
 
 // 3.
-function initWidgetSettings(configuration, widgetSettings) {
+function initWidgetSettings(configuration, widgetSettings, integrationCapabilities) {
     // setup
     var settings_capabilities = widgetSettings.connector_options.capabilities
     var connector_capabilities = {}
@@ -179,6 +179,16 @@ function initWidgetSettings(configuration, widgetSettings) {
     // set
     var key = widgetSettings.connector_options.connector_type + ":options";
     configuration.capabilities[key] = connector_capabilities;
+
+    // exit conditions
+    if (typeof (integrationCapabilities) === 'undefined' || integrationCapabilities === null) {
+        return;
+    }
+
+    // get
+    for (var item in integrationCapabilities) {
+        configuration.capabilities[key][item] = integrationCapabilities[item];
+    }
 }
 
 // 4.

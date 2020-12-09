@@ -71,6 +71,7 @@ function setConfiguration(integration) {
         integration_configuration.connectorConfiguration.userName = result.widget_settings.connector_options.user_name;
         integration_configuration.connectorConfiguration.password = result.widget_settings.connector_options.password;
         integration_configuration.connectorConfiguration.project = result.widget_settings.connector_options.project;
+        integration_configuration.connectorConfiguration.asOsUser = result.widget_settings.connector_options.as_os_user;
 
         chrome.storage.sync.set({ i_c: integration_configuration }, function () {
             console.log("Rhino: Integration configuration saved.")
@@ -78,13 +79,14 @@ function setConfiguration(integration) {
     });
 }
 
-// TODO: pass known integrations from the Widget to imporve performance
+// TODO: pass known integrations from the Widget to improve performance
 function getKnownIntegration() {
     // static integrations collection
     var knownIntegrations = [
         getXRayOnPrem(),
         getXRayCloud(),
-        getGurockCloud()
+        getGurockCloud(),
+        getAzure()
     ]
 
     // iterate

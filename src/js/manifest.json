@@ -27,7 +27,8 @@
         "js/integration_utilities.js",
         "js/integration_xray_cloud.js",
         "js/integration_xray_onprem.js",
-        "js/integration_gurock_cloud.js"
+        "js/integration_gurock_cloud.js",
+        "js/integration_azure.js"
       ]
     }
   ],
