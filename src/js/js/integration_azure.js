@@ -123,17 +123,11 @@ function getFromUrl(regularExpression) {
     // get test plan
     var entity = window.location.href.toLowerCase().match(regularExpression);
 
-    // exit conditions
-    if (typeof (entity) !== "undefined" && entity !== null && entity !== "") {
+    // get
+    if (typeof (entity) !== "undefined" && entity !== null && entity !== "" && entity.length > 0) {
         return entity[0];
     }
-
-    // normal
-    entity = window.location.href.toLocaleLowerCase().match(regularExpression)
-    entity = entity !== null && entity.length > 0 ? entity[0] : null;
-
-    // get
-    return entity[0];
+    return "-1";
 }
 
 function idColumnPosition() {
@@ -184,11 +178,11 @@ function validatorAzure(integrationObject) {
 
     // get test plan
     var testPlan = window.location.href.toLowerCase().match("(?<=planid=)\\d+");
-    var isTestPlan = typeof (testPlan) !== "undefined" && testPlan !== null || testPlan !== ""
+    var isTestPlan = typeof (testPlan) !== "undefined" && testPlan !== null && testPlan !== ""
 
     // get test suite
     var testSuite = window.location.href.toLowerCase().match("(?<=suiteid=)\\d+");
-    var isTestSuite = typeof (testSuite) !== "undefined" || testSuite !== null || testSuite !== ""
+    var isTestSuite = typeof (testSuite) !== "undefined" && testSuite !== null && testSuite !== ""
 
     // assert
     return isPath && isTestPlan && isTestSuite;
