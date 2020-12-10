@@ -36,8 +36,12 @@ function injectorAzure() {
                         </select>
                     </td>
                     <td colspan="2">
-                        <strong title="If checked, Test Execution issue will be created for this run.">Create Execution:</strong>
-                        <input id="rh_create_execution" type="checkbox" style="margin-left: 5px;" />
+                        <table>
+                            <tr>
+                                <td><input id="rh_create_execution" type="checkbox" style="margin-left: 5px;" /></td>
+                                <td><strong title="If checked, Test Execution issue will be created for this run.">Create Execution:</strong></td>                                
+                            </tr>
+                        </table>
                     </td>
                 </tr>
                 <tr>
@@ -48,8 +52,12 @@ function injectorAzure() {
                         <input id="rh_grid_endpoint" type="text" style="width: 100%" />
                     </td>
                     <td colspan="2">
-                        <strong title="If checked, Bug issue will be created for each failed test or - if already opened and test passed - Bug issue will be closed.">Open/Close Bugs:</strong>
-                        <input id="rh_open_close_bugs" type="checkbox" style="margin-left: 5px;" />
+                        <table>
+                            <tr>
+                                <td><input id="rh_open_close_bugs" type="checkbox" style="margin-left: 5px;" /></td>
+                                <td><strong title="If checked, Bug issue will be created for each failed test or - if already opened and test passed - Bug issue will be closed.">Open/Close Bugs:</strong></td>                                
+                            </tr>
+                        </table>                                               
                     </td>
                 </tr>
                 <tr>
