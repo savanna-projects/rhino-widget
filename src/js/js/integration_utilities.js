@@ -1,5 +1,9 @@
 // INJECTOR UTILITIES
-function HtmlToDom(html) {
+function getHtml() {
+
+}
+
+function htmlToDom(html) {
     // set container
     var container = document.createElement('div');
     container.innerHTML = html;

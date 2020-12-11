@@ -110,7 +110,7 @@ function injectorXrayOnPrem() {
     `
 
     // get & setup
-    var node = HtmlToDom(HTML);
+    var node = htmlToDom(HTML);
 
     // inject
     var container = containerXrayOnPrem();

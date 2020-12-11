@@ -107,7 +107,7 @@ function injectorXrayCloud() {
     `
 
     // get & setup
-    var node = HtmlToDom(HTML);
+    var node = htmlToDom(HTML);
 
     // inject
     var container = containerXrayCloud();
