@@ -23,6 +23,7 @@ var E_RHINO_USER_NAME = "#rhino_user_name";
 // -- S --
 var E_SERVER_ADDRESS = "#server_address";
 var E_SETTINGS_APPLY = "#settings_apply";
+var E_SETTINGS_EXPORT = "#settings_export";
 // -- T --
 var E_TEST_SUITE = "#test_suite";
 // -- U --
@@ -47,19 +48,40 @@ $('#preloader').fadeOut('normall', function () {
     $(this).remove();
 });
 
+function loadOptionsPipeline() {
+    loadNavbar();
+    loadSettings();
+}
+
+function loadNavbar() {
+    if ($(window).width() <= 1200) {
+        return;
+    }
+
+    $('ul.nav li.dropdown').hover(function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(300);
+    }, function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(300);
+    });
+}
+
 /**
  * Summary. Loads the last saved settings state from local storage.
  */
 function loadSettings() {
-    chrome.storage.sync.get(['widget_settings'], (stateObj) => {
-        // exit conditions
-        if (stateObj === null) {
-            return;
-        }
+    try {
+        chrome.storage.sync.get(['widget_settings'], (stateObj) => {
+            // exit conditions
+            if (stateObj === null) {
+                return;
+            }
 
-        // put
-        loadDynamicData();
-    });
+            // put
+            loadDynamicData();
+        });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function loadDynamicData() {
@@ -157,6 +179,38 @@ function saveSettings() {
     });
 }
 
+function exportSettings() {
+    try {
+        // setup
+        var stateObj = {
+            playback_options: getPlaybackOptionsState(),
+            connector_options: getConnectorOptions(),
+            rhino_options: getRhinoOptions()
+        };
+
+        // save
+        var onSettings = JSON.stringify(stateObj, null, 4);
+        var vBlob = new Blob([onSettings], { type: "octet/stream" });
+        var vName = 'rhino_settings.json';
+        var vId = 'rh_virtual_link';
+        var vUrl = window.URL.createObjectURL(vBlob);
+
+        // build
+        var vLink = document.createElement('a');
+        vLink.setAttribute('id', vId);
+        vLink.setAttribute('href', vUrl);
+        vLink.setAttribute('download', vName);
+
+        // execute
+        vLink.click();
+
+        // clean
+        $("#" + vId).remove();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 function getPlaybackOptionsState() {
     return {
         web_driver: $(E_WEB_DRIVER + " option").length > 0 ? $(E_WEB_DRIVER + " option:selected").val() : C_EMPTY_OPTION,
@@ -214,6 +268,7 @@ function asOsUser() {
     checkbox.setAttribute('class', faClass);
 }
 
-document.addEventListener('DOMContentLoaded', loadSettings);
+document.addEventListener('DOMContentLoaded', loadOptionsPipeline);
 document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
+document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
 document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);

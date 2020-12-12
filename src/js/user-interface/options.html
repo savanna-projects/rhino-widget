@@ -80,13 +80,32 @@
     <!-- Navbar START -->
     <header>
         <div class="nav-wrapper">
-            <nav class="navbar navbar-default navbar-custom" data-spy="affix" data-offset-top="50">
+            <nav class="navbar navbar-default navbar-custom affix-top" data-spy="affix" data-offset-top="50">
                 <div class="container">
                     <div class="row">
-                        <div class="section-heading center-holder">
-                            <h3>Widget Settings</h3>
-                            <div class="section-heading-line"></div>
-                            <p>Sets the widget behavior when playback automation, create test cases and connector (integration) settings.</p>
+                        <div class="navbar-header navbar-header-custom">
+                            <button type="button" class="navbar-toggle collapsed menu-icon" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <h1>Widget Settings</h1>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav navbar-right navbar-links-custom">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
+                                    <ul class="dropdown-menu dropdown-menu-left" style="display: none;">
+                                        <li><a id="settings_export">Export Settings...</a></li>
+                                        <li><a id="settings_import">Import Settings...</a></li>
+                                    </ul>
+                                </li>
+                                <li class="menu-icon">
+                                    <a id="settings_apply" href="#">Save Settings</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -104,7 +123,7 @@
                             <div class="panel-heading accordion-heading" role="tab" id="headingOne">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Connector Settings</h5>
+                                        <h3>Connector Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 3px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
@@ -164,7 +183,7 @@
                                                         <label class="col-form-label col-form-label-sm" style="margin-top: 15px; color:#999">Connect as OS User</label>
                                                     </li>
                                                 </ul>
-                                                <input type="hidden" id="as_os_user" value="false"/>
+                                                <input type="hidden" id="as_os_user" value="false" />
                                             </div>
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
@@ -182,7 +201,7 @@
                             <div class="panel-heading accordion-heading" role="tab" id="headingTwo">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Playback Settings</h5>
+                                        <h3>Playback Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 3px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -241,7 +260,7 @@
                             <div class="panel-heading accordion-heading" role="tab" id="headingThree">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Rhino Server Settings</h5>
+                                        <h3>Rhino Server Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 2px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -256,7 +275,7 @@
                                         <div class="row">
                                             <div class="col-xs-6">
                                                 <label class="col-form-label col-form-label-sm">User Name</label>
-                                                <input type="text" class="form-control-sm" id="rhino_user_name" placeholder="Your Rhino user name i.e. myUser@@rhino.com" style="margin-top:5px">
+                                                <input type="text" class="form-control-sm" id="rhino_user_name" placeholder="Your Rhino user name i.e. myUser@rhino.com" style="margin-top:5px">
                                             </div>
                                             <div class="col-xs-6">
                                                 <label class="col-form-label col-form-label-sm">Password</label>
@@ -269,11 +288,11 @@
                         </div>
                     </div>
                     <!-- Accordions END -->
-                    <div class="row">
+                    <!--<div class="row">
                         <div class="col-xs-6">
                             <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
