@@ -121,7 +121,7 @@
                                             <a><label id="settings_export" class="pointer"><i class="fa fa-upload" aria-hidden="true"></i> Export Settings...</label></a>
                                         </li>
                                         <li>
-                                            <input type="file" id="settings_import_file" multiple accept=".txt, .json" class="visually-hidden">                                            
+                                            <input type="file" id="settings_import_file" multiple accept=".txt, .json" class="visually-hidden">
                                             <a><label for="settings_import_file" class="pointer"><i class="fa fa-download" aria-hidden="true"></i> Import Settings...</label></a>
                                         </li>
                                     </ul>
@@ -143,6 +143,49 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <!-- Accordions START -->
                     <div class="panel-group mt-40" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default accordion">
+                            <div class="panel-heading accordion-heading" role="tab" id="headingZero">
+                                <div class="clearfix">
+                                    <div class="service-block-number" style="width: auto">
+                                        <h3>Rhino Server Connection</h3>
+                                    </div><br /><br />
+                                    <h4 class="panel-title accordion-title" style="padding-left: 3px">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+                                            Check and/or establish connection to Rhino Server.
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="collapseZero" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingZero" aria-expanded="false" style="padding-left: 2px; padding-right: 2px;">
+                                <div class="panel-body accordion-body">
+                                    <div class="comment-form">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <input type="text"
+                                                       class="form-control-sm"
+                                                       id="rhino_server"
+                                                       placeholder="Rhino Server i.e. https://localhost:9001"
+                                                       style="margin-top:5px" />
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <button class="button-md dark-button half-width semi-rounded mt-15"
+                                                        id="rhino_connect"
+                                                        tile="Connect to Rhino Server.">
+                                                    Connect
+                                                </button>
+                                                <span><i class="fa fa-circle" id="bulb_connect" aria-hidden="true"></i></span>
+                                                <button class="button-md dark-button half-width semi-rounded mt-15"
+                                                        id="rhino_check_connection"
+                                                        tile="Check if the connection to Rhino Server is possible, without connecting.">
+                                                    Check Connection
+                                                </button>
+                                                <span><i class="fa fa-circle" id="bulb_connection" aria-hidden="true"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="panel panel-default accordion">
                             <div class="panel-heading accordion-heading" role="tab" id="headingOne">
                                 <div class="clearfix">
