@@ -204,6 +204,7 @@ function loadDynamicData() {
 function loadConnectors(connectors) {
     // get connectors element
     var connectors_list = $(E_CONNECTOR_TYPE);
+    connectors_list.empty();
 
     // append
     $.each(connectors, (_, item) => {
@@ -215,6 +216,7 @@ function loadConnectors(connectors) {
 function loadDrivers(drivers) {
     // get connectors element
     var drivers_list = $(E_WEB_DRIVER);
+    drivers_list.empty();
 
     // append
     $.each(drivers, (_, item) => {
@@ -224,10 +226,11 @@ function loadDrivers(drivers) {
 }
 
 function loadAllSettings(stateObj, rhinoServer) {
+    // exit conditions
+
     // connector options
-    var endpoint = stateObj.last_endpoint
-    var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
-    endpoint = isEndpoint ? endpoint : rhinoServer;
+    var isEndpoint = !(typeof (stateObj.last_endpoint) === undefined || stateObj.last_endpoint === null || stateObj.last_endpoint === "");
+    var endpoint = isEndpoint ? endpoint : rhinoServer;
 
     $(E_RHINO_SERVER).val(endpoint);
     $(E_CONNECTOR_TYPE).val(stateObj.connector_options.connector_type);
@@ -240,7 +243,7 @@ function loadAllSettings(stateObj, rhinoServer) {
 
     var osUser = stateObj.connector_options.as_os_user;
     $(E_AS_OS_USER).attr('value', osUser.toString());
-    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa-check-square-o' : 'fa fa-square-o');
+    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa fa-check-square' : 'fa fa-square-o');
 
     // playback options
     $(E_WEB_DRIVER).val(stateObj.playback_options.web_driver);
@@ -377,7 +380,7 @@ function asOsUser() {
 
     // set
     if (typeof (newValue) !== 'undefined' && newValue === 'true') {
-        faClass = 'fa fa-check-square-o'
+        faClass = 'fa fa-check-square'
     }
 
     // set
