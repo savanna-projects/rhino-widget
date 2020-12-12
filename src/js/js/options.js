@@ -25,6 +25,7 @@ var E_RHINO_USER_NAME = "#rhino_user_name";
 var E_SERVER_ADDRESS = "#server_address";
 var E_SETTINGS_APPLY = "#settings_apply";
 var E_SETTINGS_EXPORT = "#settings_export";
+var E_SETTINGS_IMPORT = "#settings_import_file";
 // -- T --
 var E_TEST_SUITE = "#test_suite";
 // -- U --
@@ -83,6 +84,25 @@ function loadSettings() {
     } catch (e) {
         console.error(e);
     }
+}
+
+function importSettings(settingsFile) {
+    // setup
+    var reader = new FileReader();
+    var input = settingsFile.currentTarget;
+
+    // read
+    reader.readAsText(input.files[0]);
+
+    // handler    
+    reader.onload = () => {
+        var json = reader.result;
+        var statObj = JSON.parse(json);
+        loadAllSettings(statObj);
+    };
+    reader.onerror = (e) => {
+        console.log(e);
+    };
 }
 
 function loadDynamicData() {
@@ -298,3 +318,6 @@ document.querySelector(E_GLOBAL_DATASOURCE).addEventListener('focusout', prettif
 document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
 document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
 document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);
+
+// change
+document.querySelector(E_SETTINGS_IMPORT).addEventListener('change', importSettings, false);

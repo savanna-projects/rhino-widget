@@ -48,6 +48,22 @@
         .pointer {
             cursor: pointer;
         }
+        .visually-hidden {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+        }
+
+        /* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
+        input.visually-hidden:focus + label {
+            outline: thin dotted;
+        }
+
+        input.visually-hidden:focus-within + label {
+            outline: thin dotted;
+        }
     </style>
 </head>
 <body>
@@ -101,8 +117,13 @@
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
                                     <ul class="dropdown-menu dropdown-menu-left" style="display: none;">
-                                        <li class="pointer"><a id="settings_export">Export Settings...</a></li>
-                                        <li class="pointer"><a id="settings_import">Import Settings...</a></li>
+                                        <li class="pointer">
+                                            <a><label id="settings_export" class="pointer"><i class="fa fa-upload" aria-hidden="true"></i> Export Settings...</label></a>
+                                        </li>
+                                        <li>
+                                            <input type="file" id="settings_import_file" multiple accept=".txt, .json" class="visually-hidden">                                            
+                                            <a><label for="settings_import_file" class="pointer"><i class="fa fa-download" aria-hidden="true"></i> Import Settings...</label></a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li class="menu-icon">
@@ -308,10 +329,10 @@
                     </div>
                     <!-- Accordions END -->
                     <!--<div class="row">
-                        <div class="col-xs-6">
-                            <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
-                        </div>
-                    </div>-->
+                <div class="col-xs-6">
+                    <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
+                </div>
+            </div>-->
                 </div>
             </div>
         </div>
