@@ -43,7 +43,10 @@
             margin-top: 30px;
         }
         textarea {
-            font-family: "Courier New", Courier, monospace;
+            font-family: "Courier New", Courier, monospace;           
+        }
+        .pointer {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -98,8 +101,8 @@
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
                                     <ul class="dropdown-menu dropdown-menu-left" style="display: none;">
-                                        <li><a id="settings_export">Export Settings...</a></li>
-                                        <li><a id="settings_import">Import Settings...</a></li>
+                                        <li class="pointer"><a id="settings_export">Export Settings...</a></li>
+                                        <li class="pointer"><a id="settings_import">Import Settings...</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-icon">
@@ -189,7 +192,11 @@
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add additional connector capabilities for creating or running the current test.">Connector Capabilities (JSON formatted)</label>
-                                                <textarea class="input form-control-sm" placeholder="Connector Capabilites" id="connector_capabilities" style="margin-top:5px">{}</textarea>
+                                                <textarea class="input form-control-sm"
+                                                          name="Connector Capabilites"
+                                                          placeholder="Connector Capabilites"
+                                                          id="connector_capabilities"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -227,21 +234,33 @@
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add raw capabilities object into this WebDriver including vendor specific capabilities.">WebDriver Capabilities (JSON formatted)</label>
-                                                <textarea class="input form-control-sm" placeholder="WebDriver Capabilites" id="driver_capabilities" style="margin-top:5px">{}</textarea>
+                                                <textarea class="input form-control-sm"
+                                                          name="WebDriver Capabilites"
+                                                          placeholder="WebDriver Capabilites"
+                                                          id="driver_capabilities"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
 
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add additional driver options into this WebDriver.">WebDriver Options (JSON formatted)</label>
-                                                <textarea class="form-control form-control-sm" placeholder="WebDriver Options" id="driver_options" style="margin-top:5px">{}</textarea>
+                                                <textarea class="form-control form-control-sm"
+                                                          name="WebDriver Options"
+                                                          placeholder="WebDriver Options"
+                                                          id="driver_options"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
 
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
-                                                       title="Allows to add global data source which will be applied for all tests.">Global Data Provider (JSON Array formatted)</label>
-                                                <textarea class="form-control form-control-sm" placeholder="[]" id="global_datasource" style="margin-top:5px">[]</textarea>
+                                                       title="Allows to add global data source which will be applied for all tests.">Global Data Source (JSON Array formatted)</label>
+                                                <textarea class="form-control form-control-sm"
+                                                          name="Global Data Source"
+                                                          placeholder="[]"
+                                                          id="global_datasource"
+                                                          style="margin-top: 5px; overflow: auto">[]</textarea>
                                             </div>
 
                                             <div class="col-xs-6">

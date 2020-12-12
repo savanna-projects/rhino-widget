@@ -13,6 +13,7 @@ var E_CONNECTOR_TYPE = "#connector_type";
 var E_DRIVER_CAPABILITIES = "#driver_capabilities";
 var E_DRIVER_OPTIONS = "#driver_options";
 // -- G --
+var E_GLOBAL_DATASOURCE = "#global_datasource";
 var E_GRID_ENDPOINT = "#grid_endpoint";
 // -- P --
 var E_PASSEORD = "#password";
@@ -245,6 +246,22 @@ function getRhinoOptions() {
         rhino_password: $(E_RHINO_PASSWORD).val()
     };
 }
+
+function prettify(element) {
+    try {
+        // setup
+        var json = $(element.currentTarget).val();
+
+        // prettify
+        var objt = JSON.parse(json);
+        json = JSON.stringify(objt, null, 4);
+
+        // set
+        $(element.currentTarget).val(json);
+    } catch (e) {
+        alert('Invalid JSON in ' + $(element.currentTarget).attr('name') + ', please verify and fix the errors.');
+    }
+}
 // #endregion
 
 // Utility Scripts
@@ -268,7 +285,16 @@ function asOsUser() {
     checkbox.setAttribute('class', faClass);
 }
 
+// document
 document.addEventListener('DOMContentLoaded', loadOptionsPipeline);
+
+// focus out
+document.querySelector(E_CONNECTOR_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_OPTIONS).addEventListener('focusout', prettify);
+document.querySelector(E_GLOBAL_DATASOURCE).addEventListener('focusout', prettify);
+
+// click
 document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
 document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
 document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);
