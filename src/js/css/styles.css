@@ -7357,6 +7357,14 @@ textarea {
 	cursor: pointer;
 }
 
+.rh-text-left {
+	text-align: left;
+}
+
+.rh-middle {
+	vertical-align: middle;
+}
+
 .rh-span {
 	font-family: 'Fira Sans', sans-serif;
 	list-style: none;
