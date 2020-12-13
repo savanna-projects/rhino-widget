@@ -72,7 +72,7 @@ function main() {
     // #endregion
 
     // #region *** pipeline: disconnect     ***
-    document.getElementById("button_disconnect").addEventListener("click", disconnectHandler, false);
+    document.getElementById("disconnect_recorder").addEventListener("click", disconnectHandler, false);
 
     function disconnectHandler(e) {
         chrome.storage.sync.set({ is_connected: false }, () => {

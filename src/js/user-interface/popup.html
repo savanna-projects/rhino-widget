@@ -1,42 +1,138 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rhino Server Connector - nygGKTtD</title>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/i16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <link rel="stylesheet" href="../css/dist/bootstrap.min.css" />
-    <script src="../js/jquery.min.js"></script>
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-redbiz.min.css">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" type="text/css" href="../css/fontawesome470.css">
+    <link rel="stylesheet" type="text/css" href="../css/all.min.css">
+
+    <!-- Icomoon -->
+    <link rel="stylesheet" type="text/css" href="../css/icomoon.css">
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" type="text/css" href="../css/default.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+
+    <!-- Fonts Google -->
+    <link rel="stylesheet" type="text/css" href="../css/font-google.css">
 </head>
 <body style="min-width: 450px;">
-    <div class="container">
-        <h3>Rhino Server Settings</h3>
-        <div class="form-group">
-            <input type="text" class="form-control form-control-sm text-info" id="endpoint" placeholder="Rhino Server i.e. https://rhinoserver:9988">
-        </div>
+    <style type="text/css" scoped>
+        label input {
+            visibility: hidden; /* <-- Hide the default checkbox. The rest is to hide and allow tabbing, which display:none prevents */
+            display: block;
+            height: 0;
+            width: 0;
+            position: absolute;
+            overflow: hidden;
+        }
 
-        <div class="form-group">
-            <button type="button" class="btn btn-primary btn-sm" id="connect_recorder">Connect Recorder</button>
-            <button type="button" class="btn btn-primary btn-sm" id="button_disconnect">Disconnect</button>
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input small" id="is_local" />
-                <label class="custom-control-label small mt-2" for="is_local">Connect to Local Server</label>
+        label .checkbox { /* <-- Style the artificial checkbox */
+            height: 12px;
+            width: 12px;
+            border: 1px solid black;
+            display: inline-block;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        [type=checkbox]:checked + span { /* <-- Style its checked state */
+            background: black;
+        }
+    </style>
+
+    <!-- Top-Bar START -->
+    <div id="top-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 col-xs-12">
+                    <div class="top-bar-info">
+                        <ul>
+                            <li>
+                                <i class="fab fa-github"></i>
+                                <span><a class="white-color" href="https://github.com/savanna-projects">GitHub</a></span>
+                            </li>
+                            <li>
+                                <i class="fab fa-docker"></i>
+                                <span><a class="white-color" href="https://hub.docker.com/r/rhinoapi/rhino-agent">DockerHub</a></span>
+                            </li>
+                            <li>
+                                <i class="far fa-file-alt"></i>
+                                <a class="white-color" href="https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/Home.md">Documentation</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label class="small" for="ignore_list">Ignore List (each address on a seperate line)</label>
-            <textarea class="form-control form-control-sm" style="font-family: Consolas, Lucida Console, monospace; white-space: pre;" id="ignore_list" rows="5">
-http://localhost:8080
-            </textarea>
-        </div>
-        <div class="form-group">
-            <small class="form-text text-muted mt-4">
-                Find us on Git Hub <a href="https://github.com/gravity-api/gravity-actions/wiki" title="Dave Gandy">https://github.com/gravity-api/gravity-actions/wiki</a>
-            </small>
-            <small class="form-text text-muted mt-2">
-                icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-            </small>
-        </div>
-        <script src="../js/popup.js"></script>
     </div>
+    <header>
+        <div class="nav-wrapper">
+            <nav class="navbar navbar-default navbar-custom affix-top" data-spy="affix" data-offset-top="50">
+                <div class="container">
+                    <div class="row" style="margin-right: auto; margin-left: auto;">
+                        <div class="navbar-header navbar-header-custom">
+                            <h2>Rhino Server Connector</h2>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!-- Top-Bar END -->
+    <div class="container">
+        <div class="row mt-50">
+            <div class="contact-form-box">
+                <!-- Form Start -->
+                <div class="contact-form">
+                    <div class="col-md-12">
+                        <input type="text" id="endpoint" placeholder="Rhino Server i.e. https://localhost:9001">
+                    </div>
+
+                    <div class="col-md-12">
+                        <textarea id="ignore_list"
+                                  rows="4"
+                                  style="min-height: 50px;"
+                                  title="Ignore List (each address on a separate line)">http://localhost:8080</textarea>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-left: 15px;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="button-md dark-button semi-rounded mt-15" id="connect_recorder">Connect Recorder</button>
+                            <button class="button-md dark-button semi-rounded mt-15" id="disconnect_recorder">Disconnect</button>
+                        </div>
+                    </div>
+                    <div class="row mt-15" style="margin-left: auto;">
+                        <label style="color: #111">
+                            <input type="checkbox" id="is_local">
+                            <span class="checkbox"></span>
+                            <span>Connect to Local Server</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- Form End -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery -->
+    <script src="../js/jquery.min.js"></script>
+
+    <!-- Bootstrap JS-->
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- Main JS -->
+    <script src="../js/http_utilities.js"></script>
+    <script src="../js/options.js"></script>
+    <script src="../js/popup.js"></script>
 </body>
 </html>

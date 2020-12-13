@@ -59,14 +59,13 @@ TABLE OF CONTENT
 38. Owl Carousel
 39. Pie Charts
 40. Chart JS
+41. Custom styles
 
 
 ==============================================
 [END] TABLE OF CONTENT
 ==============================================
 */
-
-
 
 /*-----------------------------------------
 1. Sections
@@ -7323,4 +7322,89 @@ Styles 4
 	display: inline-block;
 	width: 10px;
 	height: 10px;
+}
+
+/*-----------------------------------------
+41. Custom Styles
+-------------------------------------------*/
+html {
+	overflow-y: scroll;
+}
+
+select, option {
+	font-weight: 500 !important;
+	font-size: 13px;
+	background: #fff;
+	color: #111 !important;
+	outline: none;
+	width: 100%;
+	padding: 12px;
+	transition: .3s;
+	height: 51px;
+}
+
+select {
+	border-radius: 5px;
+	border: 1px solid #ececec;
+	margin-top: 30px;
+}
+
+textarea {
+	font-family: "Courier New", Courier, monospace;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+.rh-text-left {
+	text-align: left;
+}
+
+.rh-middle {
+	vertical-align: middle;
+}
+
+.rh-span {
+	font-family: 'Fira Sans', sans-serif;
+	list-style: none;
+	list-style-type: none;
+	box-sizing: border-box;
+	background-color: transparent;
+	text-decoration: none;
+	display: block;
+	clear: both;
+	line-height: 1.42857143;
+	white-space: nowrap;
+	letter-spacing: 0.5px;
+	transition-duration: .3s;
+	border-radius: 0px;
+	font-size: 12px;
+	font-weight: 500;
+	padding: 7px 12px 7px 16px;
+	width: 180px;
+	text-transform: none;
+	text-align: left;
+	color: #999;
+}
+
+	.rh-span:hover {
+		color: #d21e2b;
+	}
+
+.visually-hidden {
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+}
+
+/* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
+input.visually-hidden:focus + label {
+	outline: thin dotted;
+}
+
+input.visually-hidden:focus-within + label {
+	outline: thin dotted;
 }

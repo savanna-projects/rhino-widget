@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <!-- Bootstrap CSS-->
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap_redbiz.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-redbiz.min.css">
 
     <!-- Font-Awesome -->
-    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="../css/fontawesome470.css">
+    <link rel="stylesheet" type="text/css" href="../css/all.min.css">
 
     <!-- Icomoon -->
     <link rel="stylesheet" type="text/css" href="../css/icomoon.css">
@@ -21,50 +22,6 @@
 
     <!-- Fonts Google -->
     <link rel="stylesheet" type="text/css" href="../css/font-google.css">
-
-    <style type="text/css">
-        html {
-            overflow-y: scroll;
-        }
-        select, option {
-            font-weight: 500 !important;
-            font-size: 13px;
-            background: #fff;
-            color: #111 !important;
-            outline: none;
-            width: 100%;
-            padding: 12px;
-            transition: .3s;
-            height: 51px;
-        }
-        select {
-            border-radius: 5px;
-            border: 1px solid #ececec;
-            margin-top: 30px;
-        }
-        textarea {
-            font-family: "Courier New", Courier, monospace;           
-        }
-        .pointer {
-            cursor: pointer;
-        }
-        .visually-hidden {
-            position: absolute !important;
-            height: 1px;
-            width: 1px;
-            overflow: hidden;
-            clip: rect(1px, 1px, 1px, 1px);
-        }
-
-        /* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
-        input.visually-hidden:focus + label {
-            outline: thin dotted;
-        }
-
-        input.visually-hidden:focus-within + label {
-            outline: thin dotted;
-        }
-    </style>
 </head>
 <body>
     <!-- Preloader Start-->
@@ -79,15 +36,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-9 col-xs-12">
-                    <div class="top-bar-welcome">
-                        <ul>
-                            <li>Rhino API - Automation Engine</li>
-                        </ul>
-                    </div>
                     <div class="top-bar-info">
                         <ul>
                             <li>
-                                <i class="fa fa-globe"></i><a class="white-color" href="https://github.com/savanna-projects">Find us on GitHub</a>
+                                <i class="fab fa-github"></i>
+                                <span><a class="white-color" href="https://github.com/savanna-projects">GitHub</a></span>
+                            </li>
+                            <li>
+                                <i class="fab fa-docker"></i>
+                                <span><a class="white-color" href="https://hub.docker.com/r/rhinoapi/rhino-agent">DockerHub</a></span>
+                            </li>
+                            <li>
+                                <i class="far fa-file-alt"></i>
+                                <a class="white-color" href="https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/Home.md">Documentation</a>
                             </li>
                         </ul>
                     </div>
@@ -108,21 +69,22 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </button>
-                            <h1>Widget Settings</h1>
+                            <h1 style="padding-left: 15px;">Widget Settings</h1>
                         </div>
 
                         <!-- Collect the nav links, forms, and other content for toggling -->
                         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav navbar-right navbar-links-custom">
                                 <li class="dropdown">
+                                    <h1></h1>
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
                                     <ul class="dropdown-menu dropdown-menu-left" style="display: none;">
                                         <li class="pointer">
-                                            <a><label id="settings_export" class="pointer"><i class="fa fa-upload" aria-hidden="true"></i> Export Settings...</label></a>
+                                            <label id="settings_export" class="pointer"><span class="rh-span"><i class="fas fa-upload"></i> Export Settings...</span></label>
                                         </li>
                                         <li>
                                             <input type="file" id="settings_import_file" multiple accept=".txt, .json" class="visually-hidden">
-                                            <a><label for="settings_import_file" class="pointer"><i class="fa fa-download" aria-hidden="true"></i> Import Settings...</label></a>
+                                            <label for="settings_import_file" class="pointer"><span class="rh-span"><i class="fas fa-download"></i> Import Settings...</span></label>
                                         </li>
                                     </ul>
                                 </li>
@@ -246,7 +208,7 @@
                                             <div class="col-xs-6" style="text-align: left">
                                                 <ul class="primary-list">
                                                     <li>
-                                                        <i id="as_os_user_checkbox" class="fa fa-check-square" style="cursor: pointer; color: #000"></i>
+                                                        <i id="as_os_user_checkbox" class="fas fa-square" style="cursor: pointer; color: #000"></i>
                                                         <label class="col-form-label col-form-label-sm" style="margin-top: 15px;">Connect as OS User</label>
                                                     </li>
                                                 </ul>
