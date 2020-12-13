@@ -243,7 +243,7 @@ function loadAllSettings(stateObj, rhinoServer) {
 
     var osUser = stateObj.connector_options.as_os_user;
     $(E_AS_OS_USER).attr('value', osUser.toString());
-    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa fa-check-square' : 'fa fa-square-o');
+    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fas fa-square' : 'far fa-square');
 
     // playback options
     $(E_WEB_DRIVER).val(stateObj.playback_options.web_driver);
@@ -372,7 +372,7 @@ function asOsUser() {
     var hidden = document.querySelector(E_AS_OS_USER);
     var checkbox = document.querySelector(E_AS_OS_USER_CHECKBOX);
     var value = hidden.getAttribute('value');
-    var faClass = 'fa fa-square-o'
+    var faClass = 'far fa-square'
 
     // switch
     var newValue = value === 'true' ? 'false' : 'true';
@@ -380,7 +380,7 @@ function asOsUser() {
 
     // set
     if (typeof (newValue) !== 'undefined' && newValue === 'true') {
-        faClass = 'fa fa-check-square'
+        faClass = 'fas fa-square'
     }
 
     // set
