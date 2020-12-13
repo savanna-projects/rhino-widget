@@ -3,6 +3,7 @@
  * 
  * @param {any} routing   Endpoint to which send the request
  * @param {any} onSuccess Success callback action
+ * @param {any} onError   Error callback action
  */
 function get(routing, onSuccess) {
     $.ajax({

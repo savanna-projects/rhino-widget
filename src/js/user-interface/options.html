@@ -43,7 +43,26 @@
             margin-top: 30px;
         }
         textarea {
-            font-family: "Courier New", Courier, monospace;
+            font-family: "Courier New", Courier, monospace;           
+        }
+        .pointer {
+            cursor: pointer;
+        }
+        .visually-hidden {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+        }
+
+        /* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
+        input.visually-hidden:focus + label {
+            outline: thin dotted;
+        }
+
+        input.visually-hidden:focus-within + label {
+            outline: thin dotted;
         }
     </style>
 </head>
@@ -80,13 +99,37 @@
     <!-- Navbar START -->
     <header>
         <div class="nav-wrapper">
-            <nav class="navbar navbar-default navbar-custom" data-spy="affix" data-offset-top="50">
+            <nav class="navbar navbar-default navbar-custom affix-top" data-spy="affix" data-offset-top="50">
                 <div class="container">
                     <div class="row">
-                        <div class="section-heading center-holder">
-                            <h3>Widget Settings</h3>
-                            <div class="section-heading-line"></div>
-                            <p>Sets the widget behavior when playback automation, create test cases and connector (integration) settings.</p>
+                        <div class="navbar-header navbar-header-custom">
+                            <button type="button" class="navbar-toggle collapsed menu-icon" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <h1>Widget Settings</h1>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav navbar-right navbar-links-custom">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
+                                    <ul class="dropdown-menu dropdown-menu-left" style="display: none;">
+                                        <li class="pointer">
+                                            <a><label id="settings_export" class="pointer"><i class="fa fa-upload" aria-hidden="true"></i> Export Settings...</label></a>
+                                        </li>
+                                        <li>
+                                            <input type="file" id="settings_import_file" multiple accept=".txt, .json" class="visually-hidden">
+                                            <a><label for="settings_import_file" class="pointer"><i class="fa fa-download" aria-hidden="true"></i> Import Settings...</label></a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-icon">
+                                    <a id="settings_apply" href="#">Save Settings</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -101,10 +144,53 @@
                     <!-- Accordions START -->
                     <div class="panel-group mt-40" id="accordion" role="tablist" aria-multiselectable="true">
                         <div class="panel panel-default accordion">
+                            <div class="panel-heading accordion-heading" role="tab" id="headingZero">
+                                <div class="clearfix">
+                                    <div class="service-block-number" style="width: auto">
+                                        <h3>Rhino Server Connection</h3>
+                                    </div><br /><br />
+                                    <h4 class="panel-title accordion-title" style="padding-left: 3px">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+                                            Check and/or establish connection to Rhino Server
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="collapseZero" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingZero" aria-expanded="false" style="padding-left: 2px; padding-right: 2px;">
+                                <div class="panel-body accordion-body">
+                                    <div class="comment-form">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <input type="text"
+                                                       class="form-control-sm"
+                                                       id="rhino_server"
+                                                       placeholder="Rhino Server i.e. https://localhost:9001"
+                                                       style="margin-top:5px" />
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <button class="button-md dark-button half-width semi-rounded mt-15"
+                                                        id="rhino_connect"
+                                                        tile="Connect to Rhino Server.">
+                                                    Connect
+                                                </button>
+                                                <span><i class="fa fa-circle" id="bulb_connect" aria-hidden="true"></i></span>
+                                                <button class="button-md dark-button half-width semi-rounded mt-15"
+                                                        id="rhino_check_connection"
+                                                        tile="Check if the connection to Rhino Server is possible, without connecting.">
+                                                    Check Connection
+                                                </button>
+                                                <span><i class="fa fa-circle" id="bulb_connection" aria-hidden="true"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default accordion">
                             <div class="panel-heading accordion-heading" role="tab" id="headingOne">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Connector Settings</h5>
+                                        <h3>Connector Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 3px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
@@ -137,7 +223,7 @@
                                                 <input type="text"
                                                        class="form-control-sm"
                                                        id="test_suite"
-                                                       placeholder="ALM server address (Jira, DevOps, etc.) i.e. https://myserver:8080/"
+                                                       placeholder="Test suite ID (e.g. 12)."
                                                        style="margin-top:5px"
                                                        title="Test suite or Test set id. This is the entity under which this test case will be created. Leave blank for text output." />
                                             </div>
@@ -160,17 +246,21 @@
                                             <div class="col-xs-6" style="text-align: left">
                                                 <ul class="primary-list">
                                                     <li>
-                                                        <i id="as_os_user_checkbox" class="fa fa-square-o" style="cursor: pointer"></i>
-                                                        <label class="col-form-label col-form-label-sm" style="margin-top: 15px; color:#999">Connect as OS User</label>
+                                                        <i id="as_os_user_checkbox" class="fa fa-check-square" style="cursor: pointer; color: #000"></i>
+                                                        <label class="col-form-label col-form-label-sm" style="margin-top: 15px;">Connect as OS User</label>
                                                     </li>
                                                 </ul>
-                                                <input type="hidden" id="as_os_user" value="false"/>
+                                                <input type="hidden" id="as_os_user" value="false" />
                                             </div>
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add additional connector capabilities for creating or running the current test.">Connector Capabilities (JSON formatted)</label>
-                                                <textarea class="input form-control-sm" placeholder="Connector Capabilites" id="connector_capabilities" style="margin-top:5px">{}</textarea>
+                                                <textarea class="input form-control-sm"
+                                                          name="Connector Capabilites"
+                                                          placeholder="Connector Capabilites"
+                                                          id="connector_capabilities"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -182,7 +272,7 @@
                             <div class="panel-heading accordion-heading" role="tab" id="headingTwo">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Playback Settings</h5>
+                                        <h3>Playback Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 3px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -208,21 +298,33 @@
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add raw capabilities object into this WebDriver including vendor specific capabilities.">WebDriver Capabilities (JSON formatted)</label>
-                                                <textarea class="input form-control-sm" placeholder="WebDriver Capabilites" id="driver_capabilities" style="margin-top:5px">{}</textarea>
+                                                <textarea class="input form-control-sm"
+                                                          name="WebDriver Capabilites"
+                                                          placeholder="WebDriver Capabilites"
+                                                          id="driver_capabilities"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
 
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
                                                        title="Allows to add additional driver options into this WebDriver.">WebDriver Options (JSON formatted)</label>
-                                                <textarea class="form-control form-control-sm" placeholder="WebDriver Options" id="driver_options" style="margin-top:5px">{}</textarea>
+                                                <textarea class="form-control form-control-sm"
+                                                          name="WebDriver Options"
+                                                          placeholder="WebDriver Options"
+                                                          id="driver_options"
+                                                          style="margin-top: 5px; overflow: auto">{}</textarea>
                                             </div>
 
                                             <div class="col-xs-12">
                                                 <label style="margin-top: 15px"
                                                        class="col-form-label col-form-label-sm"
-                                                       title="Allows to add global data source which will be applied for all tests.">Global Data Provider (JSON Array formatted)</label>
-                                                <textarea class="form-control form-control-sm" placeholder="[]" id="global_datasource" style="margin-top:5px">[]</textarea>
+                                                       title="Allows to add global data source which will be applied for all tests.">Global Data Source (JSON Array formatted)</label>
+                                                <textarea class="form-control form-control-sm"
+                                                          name="Global Data Source"
+                                                          placeholder="[]"
+                                                          id="global_datasource"
+                                                          style="margin-top: 5px; overflow: auto">[]</textarea>
                                             </div>
 
                                             <div class="col-xs-6">
@@ -241,7 +343,7 @@
                             <div class="panel-heading accordion-heading" role="tab" id="headingThree">
                                 <div class="clearfix">
                                     <div class="service-block-number" style="width: auto">
-                                        <h5>Rhino Server Settings</h5>
+                                        <h3>Rhino Server Settings</h3>
                                     </div><br /><br />
                                     <h4 class="panel-title accordion-title" style="padding-left: 2px">
                                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -256,7 +358,7 @@
                                         <div class="row">
                                             <div class="col-xs-6">
                                                 <label class="col-form-label col-form-label-sm">User Name</label>
-                                                <input type="text" class="form-control-sm" id="rhino_user_name" placeholder="Your Rhino user name i.e. myUser@@rhino.com" style="margin-top:5px">
+                                                <input type="text" class="form-control-sm" id="rhino_user_name" placeholder="Your Rhino user name i.e. myUser@rhino.com" style="margin-top:5px">
                                             </div>
                                             <div class="col-xs-6">
                                                 <label class="col-form-label col-form-label-sm">Password</label>
@@ -269,11 +371,11 @@
                         </div>
                     </div>
                     <!-- Accordions END -->
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
-                        </div>
-                    </div>
+                    <!--<div class="row">
+                <div class="col-xs-6">
+                    <button id="settings_apply" class="button-md dark-button half-width semi-rounded mt-15">Save Settings</button>
+                </div>
+            </div>-->
                 </div>
             </div>
         </div>

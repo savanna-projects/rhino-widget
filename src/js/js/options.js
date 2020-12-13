@@ -6,6 +6,9 @@
 // -- A --
 var E_AS_OS_USER = '#as_os_user'
 var E_AS_OS_USER_CHECKBOX = '#as_os_user_checkbox'
+// -- B --
+var E_BULB_CONNECT = "#bulb_connect";
+var E_BULB_CONNECTION = "#bulb_connection";
 // -- C --
 var E_CONNECTOR_CAPABILITIES = "#connector_capabilities";
 var E_CONNECTOR_TYPE = "#connector_type";
@@ -13,16 +16,22 @@ var E_CONNECTOR_TYPE = "#connector_type";
 var E_DRIVER_CAPABILITIES = "#driver_capabilities";
 var E_DRIVER_OPTIONS = "#driver_options";
 // -- G --
+var E_GLOBAL_DATASOURCE = "#global_datasource";
 var E_GRID_ENDPOINT = "#grid_endpoint";
 // -- P --
 var E_PASSEORD = "#password";
 var E_PROJECT = "#project";
 // -- R --
+var E_RHINO_CHECK_CONNECTION = "#rhino_check_connection";
+var E_RHINO_CONNECT = "#rhino_connect";
 var E_RHINO_PASSWORD = "#rhino_password";
+var E_RHINO_SERVER = "#rhino_server";
 var E_RHINO_USER_NAME = "#rhino_user_name";
 // -- S --
 var E_SERVER_ADDRESS = "#server_address";
 var E_SETTINGS_APPLY = "#settings_apply";
+var E_SETTINGS_EXPORT = "#settings_export";
+var E_SETTINGS_IMPORT = "#settings_import_file";
 // -- T --
 var E_TEST_SUITE = "#test_suite";
 // -- U --
@@ -47,22 +56,128 @@ $('#preloader').fadeOut('normall', function () {
     $(this).remove();
 });
 
+function loadOptionsPipeline() {
+    loadNavbar();
+    loadSettings();
+}
+
+function loadNavbar() {
+    if ($(window).width() <= 1200) {
+        return;
+    }
+
+    $('ul.nav li.dropdown').hover(function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(300);
+    }, function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(300);
+    });
+}
+
+function connect() {
+    // reset
+    setBulbCss(E_BULB_CONNECT, 'text-danger');
+
+    try {
+        // setup
+        var endpoint = $(E_RHINO_SERVER).val();
+
+        // setup conditions
+        var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
+
+        // get endpoint
+        if (!isEndpoint) {
+            endpoint = "https://localhost:9001/"
+        }
+        endpoint = endpoint.endsWith('/')
+            ? endpoint.substr(0, endpoint.length - 1)
+            : endpoint;
+
+        // setup
+        $(E_RHINO_SERVER).val(endpoint);
+
+        // connect
+        chrome.storage.sync.set({ last_endpoint: endpoint }, () => {
+            get(endpoint + R_CONNECTORS, (connectors) => {
+                get(endpoint + R_DRIVERS, (drivers) => {
+                    loadConnectors(connectors);
+                    loadDrivers(drivers);
+                    setBulbCss(E_BULB_CONNECT, 'text-success');
+                });
+            });
+        });
+    } catch (e) {
+        console.error(e);
+        setBulbCss(E_BULB_CONNECT, 'text-danger');
+    }
+}
+
+function checkConnection() {
+    // reset
+    setBulbCss(E_BULB_CONNECTION, 'text-danger');
+
+    // setup
+    var route = '/api/latest/ping'
+    var endpoint = $(E_RHINO_SERVER).val();
+
+    // exit conditions
+    var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
+    if (!isEndpoint) {
+        return;
+    }
+
+    // setup
+    endpoint = endpoint.endsWith('/')
+        ? endpoint.substr(0, endpoint.length - 1) + route
+        : endpoint + route;
+
+    // get
+    get(endpoint, (response) => {
+        console.log(response);
+        setBulbCss(E_BULB_CONNECTION, 'text-success');
+    });
+}
+
 /**
  * Summary. Loads the last saved settings state from local storage.
  */
 function loadSettings() {
-    chrome.storage.sync.get(['widget_settings'], (stateObj) => {
-        // exit conditions
-        if (stateObj === null) {
-            return;
-        }
+    try {
+        chrome.storage.sync.get(['widget_settings'], (stateObj) => {
+            // exit conditions
+            if (stateObj === null) {
+                return;
+            }
 
-        // put
-        loadDynamicData();
-    });
+            // put
+            loadDynamicData();
+        });
+    } catch (e) {
+        console.error(e);
+        setBulbCss(E_BULB_CONNECT, 'text-danger');
+    }
+}
+
+function importSettings(settingsFile) {
+    // setup
+    var reader = new FileReader();
+    var input = settingsFile.currentTarget;
+
+    // read
+    reader.readAsText(input.files[0]);
+
+    // handler    
+    reader.onload = () => {
+        var json = reader.result;
+        var statObj = JSON.parse(json);
+        loadAllSettings(statObj);
+    };
+    reader.onerror = (e) => {
+        console.log(e);
+    };
 }
 
 function loadDynamicData() {
+    setBulbCss(E_BULB_CONNECT, 'text-danger');
     chrome.storage.sync.get(['last_endpoint', 'widget_settings'], function (storage) {
         // load server endpoint
         if (typeof (storage.last_endpoint) === 'undefined' || storage.last_endpoint === null || storage.last_endpoint === '') {
@@ -79,7 +194,8 @@ function loadDynamicData() {
             get(endpoint + R_DRIVERS, (drivers) => {
                 loadConnectors(connectors);
                 loadDrivers(drivers);
-                loadAllSettings(storage.widget_settings);
+                loadAllSettings(storage.widget_settings, endpoint);
+                setBulbCss(E_BULB_CONNECT, 'text-success');
             });
         });
     });
@@ -88,6 +204,7 @@ function loadDynamicData() {
 function loadConnectors(connectors) {
     // get connectors element
     var connectors_list = $(E_CONNECTOR_TYPE);
+    connectors_list.empty();
 
     // append
     $.each(connectors, (_, item) => {
@@ -99,6 +216,7 @@ function loadConnectors(connectors) {
 function loadDrivers(drivers) {
     // get connectors element
     var drivers_list = $(E_WEB_DRIVER);
+    drivers_list.empty();
 
     // append
     $.each(drivers, (_, item) => {
@@ -107,8 +225,14 @@ function loadDrivers(drivers) {
     });
 }
 
-function loadAllSettings(stateObj) {
+function loadAllSettings(stateObj, rhinoServer) {
+    // exit conditions
+
     // connector options
+    var isEndpoint = !(typeof (stateObj.last_endpoint) === undefined || stateObj.last_endpoint === null || stateObj.last_endpoint === "");
+    var endpoint = isEndpoint ? endpoint : rhinoServer;
+
+    $(E_RHINO_SERVER).val(endpoint);
     $(E_CONNECTOR_TYPE).val(stateObj.connector_options.connector_type);
     $(E_SERVER_ADDRESS).val(stateObj.connector_options.server_address);
     $(E_PROJECT).val(stateObj.connector_options.project);
@@ -119,7 +243,7 @@ function loadAllSettings(stateObj) {
 
     var osUser = stateObj.connector_options.as_os_user;
     $(E_AS_OS_USER).attr('value', osUser.toString());
-    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa-check-square-o' : 'fa fa-square-o');
+    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fa fa-check-square' : 'fa fa-square-o');
 
     // playback options
     $(E_WEB_DRIVER).val(stateObj.playback_options.web_driver);
@@ -137,6 +261,7 @@ function loadAllSettings(stateObj) {
  */
 function saveSettings() {
     var stateObj = {
+        last_endpoint: $(E_RHINO_SERVER).val(),
         playback_options: getPlaybackOptionsState(),
         connector_options: getConnectorOptions(),
         rhino_options: getRhinoOptions()
@@ -155,6 +280,38 @@ function saveSettings() {
             $(E_SETTINGS_APPLY).prop('disabled', false);
         }
     });
+}
+
+function exportSettings() {
+    try {
+        // setup
+        var stateObj = {
+            playback_options: getPlaybackOptionsState(),
+            connector_options: getConnectorOptions(),
+            rhino_options: getRhinoOptions()
+        };
+
+        // save
+        var onSettings = JSON.stringify(stateObj, null, 4);
+        var vBlob = new Blob([onSettings], { type: "octet/stream" });
+        var vName = 'rhino_settings.json';
+        var vId = 'rh_virtual_link';
+        var vUrl = window.URL.createObjectURL(vBlob);
+
+        // build
+        var vLink = document.createElement('a');
+        vLink.setAttribute('id', vId);
+        vLink.setAttribute('href', vUrl);
+        vLink.setAttribute('download', vName);
+
+        // execute
+        vLink.click();
+
+        // clean
+        $("#" + vId).remove();
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 function getPlaybackOptionsState() {
@@ -191,6 +348,22 @@ function getRhinoOptions() {
         rhino_password: $(E_RHINO_PASSWORD).val()
     };
 }
+
+function prettify(element) {
+    try {
+        // setup
+        var json = $(element.currentTarget).val();
+
+        // prettify
+        var objt = JSON.parse(json);
+        json = JSON.stringify(objt, null, 4);
+
+        // set
+        $(element.currentTarget).val(json);
+    } catch (e) {
+        alert('Invalid JSON in ' + $(element.currentTarget).attr('name') + ', please verify and fix the errors.');
+    }
+}
 // #endregion
 
 // Utility Scripts
@@ -207,13 +380,43 @@ function asOsUser() {
 
     // set
     if (typeof (newValue) !== 'undefined' && newValue === 'true') {
-        faClass = 'fa fa-check-square-o'
+        faClass = 'fa fa-check-square'
     }
 
     // set
     checkbox.setAttribute('class', faClass);
 }
 
-document.addEventListener('DOMContentLoaded', loadSettings);
+function setBulbCss(element, cssClass) {
+    // setup
+    var onClass = $(element).attr("class").replace('text-danger', '').replace('text-success');
+    var isCssClass = onClass.includes(cssClass);    
+
+    // exit conditions
+    if (isCssClass) {
+        return;
+    }
+
+    // set
+    onClass += " " + cssClass;
+    $(element).attr('class', onClass);
+}
+
+// document
+document.addEventListener('DOMContentLoaded', loadOptionsPipeline);
+
+// focus out
+document.querySelector(E_CONNECTOR_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_OPTIONS).addEventListener('focusout', prettify);
+document.querySelector(E_GLOBAL_DATASOURCE).addEventListener('focusout', prettify);
+
+// click
 document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
+document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
 document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);
+document.querySelector(E_RHINO_CHECK_CONNECTION).addEventListener('click', checkConnection);
+document.querySelector(E_RHINO_CONNECT).addEventListener('click', connect);
+
+// change
+document.querySelector(E_SETTINGS_IMPORT).addEventListener('change', importSettings, false);
