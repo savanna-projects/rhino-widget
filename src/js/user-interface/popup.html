@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../css/fontawesome470.css">
     <link rel="stylesheet" type="text/css" href="../css/all.min.css">
 
-    <!-- Icomoon -->
+    <!-- IComoon -->
     <link rel="stylesheet" type="text/css" href="../css/icomoon.css">
 
     <!-- Main Styles -->
@@ -25,95 +25,88 @@
 </head>
 <body style="min-width: 450px;">
     <style type="text/css" scoped>
-        label input {
-            visibility: hidden; /* <-- Hide the default checkbox. The rest is to hide and allow tabbing, which display:none prevents */
-            display: block;
-            height: 0;
-            width: 0;
-            position: absolute;
-            overflow: hidden;
-        }
-
-        label .checkbox { /* <-- Style the artificial checkbox */
-            height: 12px;
-            width: 12px;
-            border: 1px solid black;
-            display: inline-block;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-        [type=checkbox]:checked + span { /* <-- Style its checked state */
-            background: black;
-        }
+        @import url("../css/scoped.css");
     </style>
-
-    <!-- Top-Bar START -->
-    <div id="top-bar">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-9 col-xs-12">
-                    <div class="top-bar-info">
-                        <ul>
-                            <li>
-                                <i class="fab fa-github"></i>
-                                <span><a class="white-color" href="https://github.com/savanna-projects">GitHub</a></span>
-                            </li>
-                            <li>
-                                <i class="fab fa-docker"></i>
-                                <span><a class="white-color" href="https://hub.docker.com/r/rhinoapi/rhino-agent">DockerHub</a></span>
-                            </li>
-                            <li>
-                                <i class="far fa-file-alt"></i>
-                                <a class="white-color" href="https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/Home.md">Documentation</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <!-- Preloader Start-->
+    <div id="preloader">
+        <div class="row loader">
+            <div class="loader-icon"></div>
         </div>
     </div>
+    <!-- Preloader End -->
+    <!-- Top-Bar START -->
+    <div id="top-bar" class="unselectable" w3-include-html="partial.links.html"></div>
+    <!-- Top-Bar END -->
+    <!-- Title (header section) START -->
     <header>
-        <div class="nav-wrapper">
-            <nav class="navbar navbar-default navbar-custom affix-top" data-spy="affix" data-offset-top="50">
+        <div class="nav-wrapper unselectable">
+            <nav class="navbar navbar-default navbar-custom affix-top"
+                 data-spy="affix"
+                 data-offset-top="50">
                 <div class="container">
-                    <div class="row" style="margin-right: auto; margin-left: auto;">
+                    <div class="row"
+                         style="margin-right: auto; margin-left: auto;">
                         <div class="navbar-header navbar-header-custom">
-                            <h2>Rhino Server Connector</h2>
+                            <h3><i class="fas fa-plug"></i> Rhino Server Connector</h3>
                         </div>
                     </div>
                 </div>
             </nav>
         </div>
     </header>
-    <!-- Top-Bar END -->
+    <!-- Title (header section) END -->
     <div class="container">
-        <div class="row mt-50">
-            <div class="contact-form-box">
+        <div class="row mt-15">
+            <div class="contact-form-box unselectable">
                 <!-- Form Start -->
                 <div class="contact-form">
+                    <div class="col-md-12"
+                         id="rhinoMessageContainer">
+                    </div>
                     <div class="col-md-12">
-                        <input type="text" id="endpoint" placeholder="Rhino Server i.e. https://localhost:9001">
+                        <input type="text"
+                               id="rhinoEndpoint"
+                               title="Rhino Endpoint: Rhino server endpoint to connect to."
+                               placeholder="Rhino Server i.e. https://localhost:9001">
                     </div>
 
                     <div class="col-md-12">
-                        <textarea id="ignore_list"
+                        <select id="recorderMode"
+                                style="margin-top: 0px;"
+                                title="Recorder Mode: Switch between different modes of actions and elements recording.">
+                            <option value="client.manual.js">Manual</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
+                        <textarea id="ignoreList"
                                   rows="4"
                                   style="min-height: 50px;"
-                                  title="Ignore List (each address on a separate line)">http://localhost:8080</textarea>
+                                  title="Ignore List: A list of addresses on which the recording client will not be injected. Each address in a new line.">http://localhost:8080</textarea>
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-left: 15px;">
+                <div class="form-group"
+                     style="margin-left: 15px;">
                     <div class="row">
                         <div class="col-md-6">
-                            <button class="button-md dark-button semi-rounded mt-15" id="connect_recorder">Connect Recorder</button>
-                            <button class="button-md dark-button semi-rounded mt-15" id="disconnect_recorder">Disconnect</button>
+                            <button class="button-md dark-button semi-rounded mt-15"
+                                    id="recorderConnect"
+                                    title="Connect: Establish a live connection between any site to Rhino Recorder, allows to record actions and elements.">
+                                Connect Recorder
+                            </button>
+                            <button class="button-md dark-button semi-rounded mt-15"
+                                    id="recorderDisconnect"
+                                    title="Disconnect: Remove the connection with Rhino Recorder, refreshing all sites and clears the middleware scripts.">
+                                Disconnect
+                            </button>
                         </div>
                     </div>
-                    <div class="row mt-15" style="margin-left: auto;">
-                        <label style="color: #111">
-                            <input type="checkbox" id="is_local">
+                    <div class="row"
+                         style="margin-left: auto;">
+                        <label class="label-checkbox unselectable"
+                               title="Local Server: If checked, the connection will be done against the default 'https://localhost:9001' address.">
+                            <input type="checkbox" id="rhinoLocal">
                             <span class="checkbox"></span>
                             <span>Connect to Local Server</span>
                         </label>
@@ -124,15 +117,17 @@
         </div>
     </div>
 
-    <!-- Jquery -->
+    <!-- JQuery -->
     <script src="../js/jquery.min.js"></script>
 
-    <!-- Bootstrap JS-->
+    <!-- Bootstrap -->
     <script src="../js/bootstrap.min.js"></script>
 
-    <!-- Main JS -->
-    <script src="../js/http_utilities.js"></script>
-    <script src="../js/options.js"></script>
+    <!-- Rhino -->
+    <script src="../js/utilities.html.js"></script>
+    <script src="../js/utilities.js"></script>
+    <script src="../js/utilities.http.js"></script>
+    <script src="../js/popup.manager.js"></script>
     <script src="../js/popup.js"></script>
 </body>
 </html>

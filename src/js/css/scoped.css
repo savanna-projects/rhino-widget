@@ -1,0 +1,38 @@
+/* Hide the default checkbox. The rest is to hide and allow tabbing, which display:none prevents */
+label input {
+    visibility: hidden;
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    overflow: hidden;
+}
+
+/* Style the artificial checkbox */
+label .checkbox {
+    height: 13px;
+    width: 13px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    border-radius: 3px;
+}
+
+/* Style its checked state */
+[type=checkbox]:checked + span {
+    background: black;
+}
+
+/* label style */
+.label-checkbox {
+    font-weight: 500 !important;
+    font-size: 13px;
+    color: #111 !important;
+    display: flex;
+    align-items: center;
+}
+
+.underline-hover:hover{
+    text-decoration: underline;
+}

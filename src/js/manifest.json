@@ -14,6 +14,8 @@
   "options_page": "user-interface/options.html",
   "background": {
     "scripts": [
+      "js/utilities.http.js",
+      "js/utilities.js",
       "js/background.js"
     ],
     "persistent": false
@@ -21,14 +23,16 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*/*"
+        "*://*/*",
+        "file:///*/*"
       ],
       "js": [
-        "js/integration_utilities.js",
-        "js/integration_xray_cloud.js",
-        "js/integration_xray_onprem.js",
-        "js/integration_gurock_cloud.js",
-        "js/integration_azure.js"
+        "js/utilities.http.js",
+        "js/utilities.js",
+        "js/middleware.js",
+        "js/integration.html.js",
+        "js/integration.js",
+        "js/integration.azure.js"
       ]
     }
   ],
@@ -46,12 +50,5 @@
     "32": "images/i32.png",
     "48": "images/i48.png",
     "128": "images/i128.png"
-  },
-  "externally_connectable": {
-    "matches": [
-      "*://localhost/*",
-      "*://rhino-widget.azurewebsites.net/*"
-    ],
-    "accepts_tls_channel_id": false
   }
 }
