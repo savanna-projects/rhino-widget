@@ -20,46 +20,31 @@ port.onMessage.addListener((message, sender) => {
     messageHandler(message, sender);
 });
 
+window.addEventListener("message", (event) => {
+    windowMessageHandler(event);
+});
+
+
 //┌─[ MIDDLEWARE API ]──────────────────────────┐
 //│                                             │
 //│ 1. Handles requests from client scripts.    │
 //│ 2. Manage background indirect connection.   │
 //└─────────────────────────────────────────────┘
 //
-// GET /api/ping
-function ping(message, sender) {
+// GET /api/getSettingsProxy
+function getSettingsProxyCallback(message, sender) {
     // setup
     message["issuer"] = sender;
 
-    // TODO: handle ping message
-    console.log(message);
+    // handle the message
+    var _message = JSON.stringify(message);
+    window.postMessage({ action: 'send', message: _message }, "*");
 }
 
-function pingOut() {
+function getSettingsProxy() {
     // setup
-    var requestBody = getRequest(C_MIDDLEWARE, '/api/ping', {})
+    var requestBody = getRequest(C_MIDDLEWARE, '/api/getSettings', {}, '/api/getSettingsProxyCallback')
 
     // get
-    port.postMessage(requestBody, (response) => {
-        console.log(response);
-    });
-}
-
-// GET /api/getSettings
-function getSettings(message, sender) {
-    // setup
-    message["issuer"] = sender;
-
-    // TODO: handle ping message
-    console.log(message);
-}
-
-function getSettingsOut() {
-    // setup
-    var requestBody = getRequest(C_MIDDLEWARE, '/api/getSettings', {})
-
-    // get
-    port.postMessage(requestBody, (response) => {
-        console.log(response);
-    });
+    port.postMessage(requestBody);
 }

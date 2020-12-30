@@ -9,7 +9,11 @@
 var knownServers = [
     "Rhino Recorder Client - nygGKTtD",
     "Rhino Widget - nygGKTtD"
-]
+];
+
+var trustedWindows = [
+    "ui"
+];
 
 //┌─[ UTILITIES ]───────────────────────────────┐
 //│                                             │
@@ -255,16 +259,18 @@ function removeLoader(force) {
 /**
  * Gets a request object for sending to back-end API.
  * 
- * @param from  {string} The name of the page from which the request is sent.
- * @param route {string} The API route to send the request to.
- * @param data  {any}    The data to send (pass empty object - {} if you don't want to pass any data).
+ * @param from      {string} The name of the page from which the request is sent.
+ * @param route     {string} The API route to send the request to.
+ * @param data      {any}    The data to send (pass empty object - {} if you don't want to pass any data).
+ * @param routeBack {string} The route for the callback action when operation is complete.
  * 
  * @returns {any} Ready to sent request object.
  */
-function getRequest(from, route, data) {
+function getRequest(from, route, data, routeBack) {
     return {
         from: from,
         route: route,
+        routeBack: isNullOrEmpty(routeBack) ? '' : routeBack,
         data: data
     };
 }
@@ -312,30 +318,51 @@ function isNullOrEmpty(obj) {
 //│ sender route and message.                   │
 //└─────────────────────────────────────────────┘
 //
-function messageHandler(message, sender) {
+function messageHandler(request, sender) {
+    _messageHandler(request, sender);
+}
+
+function windowMessageHandler(event) {
     // exit conditions
-    if (typeof (message.from) === 'undefined' || message.from === null || message.from === '') {
+    if (!trustedWindows.includes(event.data.from)) {
+        return;
+    }
+
+    // handle
+    _messageHandler(event.data, {});
+}
+
+function _messageHandler(request, sender) {
+    // exit conditions
+    if (typeof (request.from) === 'undefined' || request.from === null || request.from === '') {
         return;
     }
 
     // setup
     var responseBody = {
-        from: message.from,
-        route: message.route,
+        from: request.from,
+        route: request.route,
+        routeBack: request.routeBack,
         statusCode: -1,
         data: {},
         issuer: sender
     };
 
     try {
+        // setup conditions
+        var isRouteBack = !isNullOrEmpty(request.routeBack);
+
         // setup
-        var actionName = message.route.substring(message.route.lastIndexOf('/') + 1, message.route.length);
-        var parameters = [message, sender];
+        var actionName = isRouteBack
+            ? request.routeBack.substring(request.routeBack.lastIndexOf('/') + 1, request.routeBack.length)
+            : request.route.substring(request.route.lastIndexOf('/') + 1, request.route.length);
+
+        var parameters = [request, sender]
         var action = window[actionName];
 
         // exit conditions
         if (typeof (action) !== 'function') {
-            responseBody.data = "Invoke-Action -Route " + message.route + " = 404 not found";
+            responseBody.data = "Invoke-Action -Route " + request.route + " = 404 not found";
             responseBody.statusCode = 404;
             console.info(responseBody);
             return;
@@ -344,7 +371,7 @@ function messageHandler(message, sender) {
         // run
         action.apply(null, parameters);
     } catch (e) {
-        responseBody.data = "Invoke-Action -Route " + message.route + " = 500 Internal server error";
+        responseBody.data = "Invoke-Action -Route " + request.route + " = 500 Internal server error";
         responseBody.statusCode = 500;
         responseBody["stack"] = e;
         console.log(responseBody);

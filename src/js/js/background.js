@@ -75,12 +75,8 @@ chrome.extension.onConnect.addListener((port) => {
     port.onMessage.addListener((request, sender) => {
         // exit conditions
         var isEmpty = isNullOrEmpty(request.from);
-        var isAccepted = !isEmpty && C_ACCEPTED_CONNECTIONS.includes(request.from);
-        //var isMiddleware = request.from === 'middleware';
-        //var isPopup = request.from === 'popup';
-        //var isOptions = request.from === 'options';
-        //var isIntegration = request.from ==='integration';
-        if (!isAccepted) {
+        var isTrusted = !isEmpty && C_ACCEPTED_CONNECTIONS.includes(request.from);
+        if (!isTrusted) {
             return;
         }
 
@@ -88,7 +84,8 @@ chrome.extension.onConnect.addListener((port) => {
             // setup
             var actionName = request.route.substring(request.route.lastIndexOf('/') + 1, request.route.length);
             var parameters = [port, request, sender];
-            var action = window[actionName];
+            var action = Reflect.get(this, actionName);
+            var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
 
             // exit conditions
             if (typeof (action) !== 'function') {
@@ -96,8 +93,10 @@ chrome.extension.onConnect.addListener((port) => {
                     request.route,
                     404,
                     "Invoke-Action -Route " + request.route + " = 404 not found",
-                    sender);
+                    sender,
+                    routeBack);
                 port.postMessage(responseBody);
+                return;
             }
 
             // build
@@ -107,7 +106,8 @@ chrome.extension.onConnect.addListener((port) => {
                 request.route,
                 500,
                 "Invoke-Action -Route " + request.route + " = 500 Internal server error",
-                sender);
+                sender,
+                routeBack);
             exceptionBody["stack"] = e;
             port.postMessage(exceptionBody);
         }
@@ -126,11 +126,12 @@ function ping(port, request, sender) {
     // setup
     var route = '/api/latest/ping'
     var endpoint = request.data.endpoint;
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
 
     // exit conditions
     var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
     if (!isEndpoint) {
-        var badRequest = getResponse(request.route, 400, {}, sender);
+        var badRequest = getResponse(request.route, 400, {}, sender, routeBack);
         port.postMessage(badRequest);
         return;
     }
@@ -142,11 +143,11 @@ function ping(port, request, sender) {
 
     // get
     get(endpoint, (response) => {
-        var ok = getResponse(request.route, 200, response, sender);
+        var ok = getResponse(request.route, 200, response, sender, routeBack);
         port.postMessage(ok);
     }, () => {
-        var internalServerError = getResponse(request.route, 500, response, sender)
-        port.postMessage(internalServerError);
+            var internalServerError = getResponse(request.route, 500, response, sender, routeBack);
+            port.postMessage(internalServerError);
     });
 }
 
@@ -168,11 +169,14 @@ function connect(port, request, sender) {
 
 // GET /api/getStatus
 function getStatus(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['isConnected', 'recorderMode'], (result) => {
         var responseBody = getResponse(request.route, 200, {
             isConnected: result.isConnected,
             recorderMode: result.recorderMode
-        }, sender);
+        }, sender, routeBack);
 
         // get
         port.postMessage(responseBody);
@@ -181,67 +185,85 @@ function getStatus(port, request, sender) {
 
 // GET /api/getSettings
 function getSettings(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['rhinoSettings'], (result) => {
         // exit conditions
         if (typeof (result.rhinoSettings) === 'undefined' || result.rhinoSettings === null) {
-            var exceptionBody = getResponse(request.route, 404, "Get-Settings = 404 not found", sender);
+            var exceptionBody = getResponse(request.route, 404, "Get-Settings = 404 not found", sender, routeBack);
             port.postMessage(exceptionBody);
             return;
         }
 
         // get
-        var responseBody = getResponse(request.route, 200, result.rhinoSettings, sender);
+        var responseBody = getResponse(request.route, 200, result.rhinoSettings, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // PUT /api/putSettings
 function putSettings(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.set({ rhinoSettings: request.data }, () => {
         chrome.storage.sync.set({ rhinoEndpoint: request.data.endpoint });
 
         // get
-        var responseBody = getResponse(request.route, 201, request.data, sender);
+        var responseBody = getResponse(request.route, 201, request.data, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // GET /api/getRhinoEndpoint
 function getRhinoEndpoint(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['rhinoEndpoint'], (result) => {
         // exit conditions
         if (typeof (result.rhinoEndpoint) === 'undefined' || result.rhinoEndpoint === null) {
-            var exceptionBody = getResponse(request.route, 404, "Get-RhinoEndpoint = 404 not found", sender);
+            var exceptionBody = getResponse(request.route, 404, "Get-RhinoEndpoint = 404 not found", sender, routeBack);
             port.postMessage(exceptionBody);
             return;
         }
 
         // get
-        var responseBody = getResponse(request.route, 200, result.rhinoEndpoint, sender);
+        var responseBody = getResponse(request.route, 200, result.rhinoEndpoint, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // PUT /api/putRhinoEndpoint
 function putRhinoEndpoint(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.set({ rhinoEndpoint: request.data }, () => {
         // get
-        var responseBody = getResponse(request.route, 201, request.data, sender);
+        var responseBody = getResponse(request.route, 201, request.data, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // PUT /api/putIgnoreList
 function putIgnoreList(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.set({ ignoreList: request.data }, () => {
         // get
-        var responseBody = getResponse(request.route, 201, request.data, sender);
+        var responseBody = getResponse(request.route, 201, request.data, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // GET /api/getIgnoreList
 function getIgnoreList(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['ignoreList'], (result) => {
         // setup
         var ignoreList = [];
@@ -252,32 +274,38 @@ function getIgnoreList(port, request, sender) {
         }
 
         // get
-        var responseBody = getResponse(request.route, 200, ignoreList, sender);
+        var responseBody = getResponse(request.route, 200, ignoreList, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // GET /api/getIntegrationSettings
 function getIntegrationSettings(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['integrationSettings'], (result) => {
         // exit conditions
         if (typeof (result.integrationSettings) === 'undefined' || result.integrationSettings === null) {
-            var exceptionBody = getResponse(request.route, 404, "Get-Settings = 404 not found", sender);
+            var exceptionBody = getResponse(request.route, 404, "Get-Settings = 404 not found", sender, routeBack);
             port.postMessage(exceptionBody);
             return;
         }
 
         // get
-        var responseBody = getResponse(request.route, 200, result.integrationSettings, sender);
+        var responseBody = getResponse(request.route, 200, result.integrationSettings, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // PUT /api/putIntegrationSettings
 function putIntegrationSettings(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.set({ integrationSettings: request.data }, () => {
         // get
-        var responseBody = getResponse(request.route, 201, request.data, sender);
+        var responseBody = getResponse(request.route, 201, request.data, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
@@ -302,12 +330,13 @@ function getServerData(port, request, sender) {
 function _getSettings(data) {
     // setup
     var endpoint = data.endpointResult.rhinoEndpoint;
+    var routeBack = isNullOrEmpty(data.request.routeBack) ? '' : data.request.routeBack;
 
     // exit conditions
     var isEndpoint = typeof (endpoint) !== 'undefined' && endpoint !== null;
 
     if (!isEndpoint) {
-        var eendpointBody = getResponse(data.request.route, 404, "Get-RhinoEndpoint = 404 not found", data.sender);
+        var eendpointBody = getResponse(data.request.route, 404, "Get-RhinoEndpoint = 404 not found", data.sender, routeBack);
         data.port.postMessage(eendpointBody);
         return;
     }
@@ -325,10 +354,11 @@ function _getSettings(data) {
                 connectors: connectors,
                 drivers: drivers,
                 endpoint: endpoint,
-                settings: settings
+                settings: settings,
+                routeBack: routeBack
             }, data.sender),
-            () => _onError(data.port, data.request.route, _getError500Message('Get-Drivers', data.request.route), data.sender));
-    }, () => _onError(data.port, data.request.route, _getError500Message('Get-Connectors', data.request.route), data.sender));
+            () => _onError(data.port, data.request.route, _getError500Message('Get-Drivers', data.request.route), data.sender, routeBack));
+    }, () => _onError(data.port, data.request.route, _getError500Message('Get-Connectors', data.request.route), data.sender, routeBack));
 }
 
 function _onSuccess(port, route, data, sender) {
@@ -345,25 +375,25 @@ function _onSuccess(port, route, data, sender) {
             connectors: connectors,
             drivers: drivers,
             settings: settings
-        }, sender);
+        }, sender, data.routeBack);
 
         // send
         port.postMessage(responseBody);
     } catch (e) {
-        var errorBody = getResponse(route, 500, e.message, sender);
+        var errorBody = getResponse(route, 500, e.message, sender, routeBack);
         port.postMessage(errorBody);
     }
 }
 
-function _onError(port, route, clientMessage, sender) {
+function _onError(port, route, clientMessage, sender, routeBack) {
     try {
         // setup
-        var responseBody = getResponse(route, 500, clientMessage, sender);
+        var responseBody = getResponse(route, 500, clientMessage, sender, routeBack);
 
         // send
         port.postMessage(responseBody);
     } catch (e) {
-        var errorBody = getResponse(route, 500, e.message, sender);
+        var errorBody = getResponse(route, 500, e.message, sender, routeBack);
         port.postMessage(errorBody);
     }
 }
@@ -376,6 +406,9 @@ function _getError500Message(action, route) {
 
 // GET /api/getConfiguration
 function getConfiguration(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['configuration'], (result) => {
         // exit conditions
         if (typeof (result.configuration) === 'undefined' || result.configuration === null || result.configuration === '') {
@@ -384,46 +417,47 @@ function getConfiguration(port, request, sender) {
         }
 
         // get
-        var responseBody = getResponse(request.route, 200, result.configuration, sender);
+        var responseBody = getResponse(request.route, 200, result.configuration, sender, routeBack);
         port.postMessage(responseBody);
     });
 }
 
 // POST /api/invokeAutomation
 function invokeAutomation(port, request, sender) {
-    chrome.storage.sync.get(['rhinoEndpoint'], (endpoint) => {
-        chrome.storage.sync.get(['rhinoSettings'], (settings) => {
-            // setup conditions
-            var isEndpoint = typeof (endpoint.rhinoEndpoint) !== 'undefined' && endpoint.rhinoEndpoint !== null && endpoint.rhinoEndpoint !== '';
-            var isSettings = typeof (settings.rhinoSettings) !== 'undefined' && settings.rhinoSettings !== null && settings.rhinoSettings !== '';
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
 
-            // exit conditions
-            if (!isEndpoint || !isSettings) {
-                _postError(port, request, sender);
-                return;
-            }
+    chrome.storage.sync.get(['rhinoEndpoint', 'rhinoSettings'], (result) => {
+        // setup conditions
+        var isEndpoint = !isNullOrEmpty(result.rhinoEndpoint);
+        var isSettings = !isNullOrEmpty(result.rhinoSettings);
 
-            // setup
-            var configuration = _initConfiguration(request.data, settings.rhinoSettings);
+        // exit conditions
+        if (!isEndpoint || !isSettings) {
+            _postError(port, request, sender);
+            return;
+        }
 
-            // save last configuration
-            chrome.storage.sync.set({ configuration: configuration });
+        // setup
+        var configuration = _initConfiguration(request.data, result.rhinoSettings);
 
-            // execute
-            var onSuccess = (response) => {
-                var responseBody = getResponse(request.route, 200, response, sender);
-                port.postMessage(responseBody);
-            }
-            var onError = (event) => {
-                var data = { response: event, message: 'Invoke-Automation = 500 internal server error' };
-                var errorBody = getResponse(request.route, 500, data, sender);
-                port.postMessage(errorBody);
-            }
-            var onAlways = (respose) => {
-                console.log(respose);
-            }
-            post(endpoint.rhinoEndpoint + R_EXECUTE, configuration, onSuccess, onError, onAlways);
-        });
+        // save last configuration
+        chrome.storage.sync.set({ configuration: configuration });
+
+        // execute
+        var onSuccess = (response) => {
+            var responseBody = getResponse(request.route, 200, response, sender, routeBack);
+            port.postMessage(responseBody);
+        }
+        var onError = (event) => {
+            var data = { response: event, message: 'Invoke-Automation = 500 internal server error' };
+            var errorBody = getResponse(request.route, 500, data, sender, routeBack);
+            port.postMessage(errorBody);
+        }
+        var onAlways = (respose) => {
+            console.log(respose);
+        }
+        post(endpoint.rhinoEndpoint + R_EXECUTE, configuration, onSuccess, onError, onAlways);
     });
 }
 
@@ -579,6 +613,9 @@ function _postError(port, request, sender) {
 
 // GET /api/getRecorder
 function getRecorder(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['rhinoEndpoint'], (endpointResult) => {
         chrome.storage.sync.get(['recorder'], (recorderResult) => {
             // setup
@@ -588,7 +625,7 @@ function getRecorder(port, request, sender) {
 
             // exit condition
             if (!isEndpoint || (isRecorder && isConnected)) {
-                var existsBody = getResponse(request.route, 200, 'Get-Recorder = OK already open and/or connected', sender);
+                var existsBody = getResponse(request.route, 200, 'Get-Recorder = OK already open and/or connected', sender, routeBack);
                 port.postMessage(existsBody);
                 return;
             }
@@ -601,7 +638,7 @@ function getRecorder(port, request, sender) {
                 true);
 
             // get
-            var createdBody = getResponse(request.route, 201, 'Get-Recorder = Created', sender);
+            var createdBody = getResponse(request.route, 201, 'Get-Recorder = Created', sender, routeBack);
             port.postMessage(createdBody);
         });
     });
@@ -609,6 +646,9 @@ function getRecorder(port, request, sender) {
 
 // POST /api/postRecorderMessage
 function postRecorderMessage(port, request, sender) {
+    // setup
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+
     chrome.storage.sync.get(['recorder'], (recorderResult) => {
         // setup
         var isRecorder = !isNullOrEmpty(recorderResult.recorder);
@@ -618,7 +658,7 @@ function postRecorderMessage(port, request, sender) {
 
         // build
         if (!isConnected) {
-            var notFoundResponse = getResponse(request.route, statusCode, recorder, sender);
+            var notFoundResponse = getResponse(request.route, statusCode, recorder, sender, routeBack);
             port.postMessage(notFoundResponse);
             return;
         }
@@ -633,10 +673,11 @@ function postRecorderMessage(port, request, sender) {
 //│ General purposes functions and helpers.     │
 //└─────────────────────────────────────────────┘
 //
-function getResponse(route, statusCode, data, issuer) {
+function getResponse(route, statusCode, data, issuer, routeBack) {
     return {
         from: "background",
         route: route,
+        routeBack: isNullOrEmpty(routeBack) ? '' : routeBack,
         statusCode: statusCode,
         data: data,
         issuer: issuer
