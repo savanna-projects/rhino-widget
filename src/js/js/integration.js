@@ -190,6 +190,7 @@ function setRhino(container, testsDataFactory, html) {
 }
 
 // PRIVATE METHODS
+//
 // run automation based on current connector
 function _invokeAutomation(testCasesData) {
     // setup

@@ -50,26 +50,12 @@ document.querySelector(E_RECORDER_CONNECT).addEventListener('click', () => {
     putRhinoEndpointOut();
 
     // wait for endpoint to populate
-    var timeout = 3000;
-    var counter = 0;
-    var step = 100;
-
     var interval = setInterval(() => {
         // get endpoint
         var endpoint = $(E_RHINO_ENDPOINT).val();
 
         // wait
         if (endpoint === '') {
-            return;
-        }
-
-        // throw timeout
-        if (counter > timeout) {            
-            clearInterval(interval);
-            setRhinoMessage(
-                E_MESSAGE_CONTAINER,
-                'alert-danger',
-                'Was not able to connect. Please make sure you have provided a valid URL.');
             return;
         }
 
@@ -81,7 +67,7 @@ document.querySelector(E_RECORDER_CONNECT).addEventListener('click', () => {
 
         // call
         openRecorder(endpoint);
-    }, step);
+    }, 100);
 });
 
 document.querySelector(E_RECORDER_DISCONNECT).addEventListener('click', () => {

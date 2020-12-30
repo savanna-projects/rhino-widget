@@ -7,11 +7,21 @@
 //
 //-- constants
 var C_CONFIGURATION_NAME = "Rhino Automation - Widget";
+var C_ACCEPTED_CONNECTIONS = [
+    "middleware",
+    "popup",
+    "options",
+    "integration",
+    "recorder"
+];
 //
 //-- routes
 var R_CONNECTORS = "/api/latest/widget/connectors";
 var R_DRIVERS = "/api/latest/widget/drivers";
 var R_EXECUTE = "/api/latest/rhino/execute";
+//
+//-- state
+var recorderWindow = null;
 //
 //-- event handlers
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
@@ -64,12 +74,13 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
 chrome.extension.onConnect.addListener((port) => {
     port.onMessage.addListener((request, sender) => {
         // exit conditions
-        var isEmpty = typeof (request.from) === 'undefined' || request.from === null || request.from === '';
-        var isMiddleware = request.from === 'middleware';
-        var isPopup = request.from === 'popup';
-        var isOptions = request.from === 'options';
-        var isIntegration = request.from.lastIndexOf('integration') !== -1;
-        if (isEmpty || (!isMiddleware && !isPopup && !isOptions && !isIntegration)) {
+        var isEmpty = isNullOrEmpty(request.from);
+        var isAccepted = !isEmpty && C_ACCEPTED_CONNECTIONS.includes(request.from);
+        //var isMiddleware = request.from === 'middleware';
+        //var isPopup = request.from === 'popup';
+        //var isOptions = request.from === 'options';
+        //var isIntegration = request.from ==='integration';
+        if (!isAccepted) {
             return;
         }
 
@@ -564,6 +575,57 @@ function _postError(port, request, sender) {
     }
     var errorBody = getResponse(request.route, 404, errorMessage, sender);
     port.postMessage(errorBody);
+}
+
+// GET /api/getRecorder
+function getRecorder(port, request, sender) {
+    chrome.storage.sync.get(['rhinoEndpoint'], (endpointResult) => {
+        chrome.storage.sync.get(['recorder'], (recorderResult) => {
+            // setup
+            var isEndpoint = typeof (endpointResult.rhinoEndpoint) !== 'undefined' && endpointResult.rhinoEndpoint !== null && endpointResult.rhinoEndpoint !== '';
+            var isRecorder = !isNullOrEmpty(recorderResult.recorder);
+            var isConnected = !isNullOrEmpty(recorderResult.recorder.isConnected) && recorderResult.recorder.isConnected;
+
+            // exit condition
+            if (!isEndpoint || (isRecorder && isConnected)) {
+                var existsBody = getResponse(request.route, 200, 'Get-Recorder = OK already open and/or connected', sender);
+                port.postMessage(existsBody);
+                return;
+            }
+
+            // open
+            recorderWindow = window.open(
+                endpointResult.rhinoEndpoint,
+                '_blank',
+                'location=yes,height=' + window.screen.height.toString() + ',width=600,scrollbars=yes,status=yes',
+                true);
+
+            // get
+            var createdBody = getResponse(request.route, 201, 'Get-Recorder = Created', sender);
+            port.postMessage(createdBody);
+        });
+    });
+}
+
+// POST /api/postRecorderMessage
+function postRecorderMessage(port, request, sender) {
+    chrome.storage.sync.get(['recorder'], (recorderResult) => {
+        // setup
+        var isRecorder = !isNullOrEmpty(recorderResult.recorder);
+        var isConnected = isRecorder && !isNullOrEmpty(recorderResult.recorder.isConnected) && recorderResult.recorder.isConnected;
+        var recorder = isConnected ? recorderResult.recorder : "Get-Recorder = 404 not found (window and/or not connected)";
+        var statusCode = isConnected ? 200 : 404;
+
+        // build
+        if (!isConnected) {
+            var notFoundResponse = getResponse(request.route, statusCode, recorder, sender);
+            port.postMessage(notFoundResponse);
+            return;
+        }
+
+        // dispatch
+        recorderWindow.postMessage(request.data, "*");
+    });
 }
 
 //┌─[ UTILITIES ]───────────────────────────────┐

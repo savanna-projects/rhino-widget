@@ -1,5 +1,25 @@
 ﻿"use strict";
 
+//┌─[ SETUP ]───────────────────────────────────┐
+//│                                             │
+//│ Set all global, static and constants.       │
+//└─────────────────────────────────────────────┘
+//
+//-- constants & elements (A-Z)
+//
+//-- P --
+var C_POPUP = 'popup';
+//-- R --
+var E_RECORDER_MODE = '#recorderMode'
+//
+//-- document state
+var port = chrome.runtime.connect({ name: C_POPUP });
+//
+//-- event handlers
+port.onMessage.addListener((message, sender) => {
+    messageHandler(message, sender);
+});
+
 //┌─[ CONNECTION ]──────────────────────────────┐
 //│                                             │
 //│ Connect and disconnect Rhino Recorder from  │
@@ -12,13 +32,20 @@
  * @param endpoint {string} Rhino server endpoint to connect to.
  */
 function openRecorder(endpoint) {
-    invokeRecorderServer(endpoint, (window) => {
-        // log
-        console.debug("Invoke-RecorderServer -Endpoint " + endpoint + " = 201 created");
-        console.debug(window);
+    chrome.windows.getAll({ populate: true }, (windows) => {
+        try {
+            // check if open
+            var isExists = isServerOpen(windows)
+            if (isExists) {
+                return;
+            }
 
-        // state
-        chrome.storage.sync.set({ isConnected: true });
+            // get
+            getRecorderOut();
+        } catch (e) {
+            console.info("Invoke-RecorderServer -Endpoint " + endpoint + " = 500 internal server error");
+            console.log(e);
+        }
     });
 }
 
@@ -33,7 +60,13 @@ function closeRecorder() {
 
     // close all tabs
     try {
-        chrome.storage.sync.set({ isConnected: false }, () => {
+        // state
+        var state = {
+            recorder: {
+                isConnected: false
+            }
+        };
+        chrome.storage.sync.set(state, () => {
             chrome.windows.getAll({ populate: true }, (windows) => {
                 windows.forEach(window => {
                     window.tabs.forEach(tab => {
@@ -53,41 +86,48 @@ function closeRecorder() {
     }
 }
 
-//┌─[ UTILITIES ]───────────────────────────────┐
-//│                                             │
-//│ General purposes functions and helpers.     │
+//┌─[ MIDDLEWARE API ]──────────────────────────┐
 //└─────────────────────────────────────────────┘
 //
-/**
- * Runs Rhino Recorder server in a new window.
- *
- * @param endpoint {string} Rhino server endpoint to connect to.
- * @param callabck {any}    Callback function to execute when run is completed.
- */
-function invokeRecorderServer(endpoint, callback) {
-    chrome.windows.getAll({ populate: true }, (windows) => {
-        try {
-            // check if open
-            var isExists = isServerOpen(windows)
-            if (isExists) {
-                return;
-            }
+// GET /api/getRecorder
+function getRecorder(message, sender) {
+    // setup
+    message["issuer"] = sender;
 
-            // create if not
-            var requestBody = {
-                url: endpoint,
-                type: "popup",
-                top: -50,
-                left: -50,
-                height: window.screen.height,
-                width: 600
-            }
-            chrome.windows.create(requestBody, (window) => {
-                callback(window);
-            });
-        } catch (e) {
-            console.info("Invoke-RecorderServer -Endpoint " + endpoint + " = 500 internal server error");
-            console.log(e);
+    // exit conditions
+    if (message.statusCode !== 201) {
+        return;
+    }
+
+    // log
+    console.debug("Get-Recorder = 201 created");
+
+    // setup
+    var recorderMode = $(E_RECORDER_MODE).val();
+    var recorderScript = typeof (recorderMode) === 'undefined' || recorderMode === null || recorderMode === ''
+        ? 'recorder.manual.js'
+        : recorderMode;
+
+    // state
+    var state = {
+        recorder: {
+            isConnected: true,
+            recorderMode: recorderScript
         }
+    };
+    chrome.storage.sync.set(state, () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.executeScript(tabs[0].id, { file: 'js/' + state.recorder.recorderMode }, () => {
+                console.debug('Invoke-Script -' + state.recorder.recorderMode + ' = OK');
+            });
+        });
     });
+}
+
+function getRecorderOut() {
+    // setup
+    var requestBody = getRequest(C_POPUP, '/api/getRecorder', {})
+
+    // get
+    port.postMessage(requestBody);
 }
