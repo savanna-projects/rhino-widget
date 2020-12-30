@@ -24,7 +24,6 @@ window.addEventListener("message", (event) => {
     windowMessageHandler(event);
 });
 
-
 //┌─[ MIDDLEWARE API ]──────────────────────────┐
 //│                                             │
 //│ 1. Handles requests from client scripts.    │
@@ -36,14 +35,17 @@ function getSettingsProxyCallback(message, sender) {
     // setup
     message["issuer"] = sender;
 
-    // handle the message
-    var _message = JSON.stringify(message);
-    window.postMessage({ action: 'send', message: _message }, "*");
+    // handle the message    
+    var messageBuilder = getMessageBuilder(C_MIDDLEWARE, message, {}).withData(message.data).build();
+    window.postMessage(messageBuilder, "*");
 }
 
-function getSettingsProxy() {
+function getSettingsProxy(message, sender) {
     // setup
-    var requestBody = getRequest(C_MIDDLEWARE, '/api/getSettings', {}, '/api/getSettingsProxyCallback')
+    var requestBody = getMessageBuilder(C_MIDDLEWARE, message, sender)
+        .withRoute('/api/getSettings')
+        .withRouteBack('/api/getSettingsProxyCallback')
+        .build();
 
     // get
     port.postMessage(requestBody);

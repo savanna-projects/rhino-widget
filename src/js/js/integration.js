@@ -73,20 +73,10 @@ function getSettings(message, sender) {
 
 function getSettingsOut() {
     // setup
-    var requestBody = getRequest(C_INTEGRATION, '/api/getSettings', {})
-
-    // get
-    port.postMessage(requestBody);
-}
-
-//GET /api/getIntegrationSettings
-function getIntegrationSettings(message, sender) {
-
-}
-
-function getIntegrationSettingsOut() {
-    // setup
-    var requestBody = getRequest(C_INTEGRATION, '/api/getIntegrationSettings', data)
+    var requestBody = new MessageBuilder()
+        .withFrom(C_INTEGRATION)
+        .withRoute('/api/getSettings')
+        .build();
 
     // get
     port.postMessage(requestBody);
@@ -109,7 +99,11 @@ function putIntegrationSettings(message, sender) {
 
 function putIntegrationSettingsOut(data) {
     // setup
-    var requestBody = getRequest(C_INTEGRATION, '/api/putIntegrationSettings', data)
+    var requestBody = new MessageBuilder()
+        .withFrom(C_INTEGRATION)
+        .withRoute('/api/putIntegrationSettings')
+        .withData(data)
+        .build();
 
     // get
     port.postMessage(requestBody);
@@ -139,7 +133,11 @@ function invokeAutomation(message, sender) {
 
 function invokeAutomationOut(data) {
     // setup
-    var requestBody = getRequest(C_INTEGRATION, '/api/invokeAutomation', data)
+    var requestBody = new MessageBuilder()
+        .withFrom(C_INTEGRATION)
+        .withRoute('/api/invokeAutomation')
+        .withData(data)
+        .build();
     var element = _getUiElement(E_RUN_AUTOMATION);
 
     // user interface

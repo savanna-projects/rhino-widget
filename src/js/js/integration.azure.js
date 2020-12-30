@@ -43,12 +43,6 @@ var C_PLAN_PATTERN = "(?<=planid=)\\d+";
 //
 //-- S --
 var C_SUITE_PATTERN = "(?<=suiteid=)\\d+";
-//
-//-- event handlers
-//var port = chrome.runtime.connect({ name: C_INTEGRATION });
-//port.onMessage.addListener((message, sender) => {
-//    messageHandler(message, sender);
-//});
 
 //┌─[ INTEGRATION INTERFACE ]───────────────────┐
 //│                                             │

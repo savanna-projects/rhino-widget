@@ -266,12 +266,13 @@ function removeLoader(force) {
  * 
  * @returns {any} Ready to sent request object.
  */
-function getRequest(from, route, data, routeBack) {
+function getRequest(from, route, data, routeBack, action) {
     return {
         from: from,
         route: route,
         routeBack: isNullOrEmpty(routeBack) ? '' : routeBack,
-        data: data
+        data: data,
+        action: isNullOrEmpty(action) ? '' : action
     };
 }
 
@@ -345,7 +346,8 @@ function _messageHandler(request, sender) {
         routeBack: request.routeBack,
         statusCode: -1,
         data: {},
-        issuer: sender
+        issuer: sender,
+        action: !isNullOrEmpty(request.action) ? request.action : ""
     };
 
     try {
@@ -376,4 +378,33 @@ function _messageHandler(request, sender) {
         responseBody["stack"] = e;
         console.log(responseBody);
     }
+}
+
+//┌─[ UTILITIES ]───────────────────────────────┐
+//│                                             │
+//│ General purposes functions and helpers.     │
+//└─────────────────────────────────────────────┘
+//
+/**
+ * Summary: Gets a builder for creating a unified message to send across the application.
+ *
+ * @param {string} from    The message origin.
+ * @param {any}    request The request data.
+ * @param {any}    sender  The object initiated the request.
+ *
+ * @returns {MessageBuilder} A builder for creating a unified message.
+ */
+function getMessageBuilder(from, request, sender) {
+    // setup
+    var route = isNullOrEmpty(request.route) ? '' : request.route;
+    var routeBack = isNullOrEmpty(request.routeBack) ? '' : request.routeBack;
+    var action = isNullOrEmpty(request.action) ? '' : request.action;    
+
+    // get
+    return new MessageBuilder()
+        .withFrom(from)
+        .withRoute(route)
+        .withIssuer(sender)
+        .withRouteBack(routeBack)
+        .withAction(action);
 }
