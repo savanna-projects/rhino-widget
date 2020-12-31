@@ -7,6 +7,8 @@
 //
 //-- constants & elements (A-Z)
 //
+//-- I --
+var E_IGNORE_LIST = "#ignoreList";
 //-- P --
 var C_POPUP = 'popup';
 //-- R --
@@ -93,6 +95,7 @@ function closeRecorder() {
 function getRecorder(message, sender) {
     // setup
     message["issuer"] = sender;
+    var ignoreList = $(E_IGNORE_LIST).val().split('\n');
 
     // exit conditions
     if (message.statusCode !== 201) {
@@ -117,7 +120,18 @@ function getRecorder(message, sender) {
     };
     chrome.storage.sync.set(state, () => {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.executeScript(tabs[0].id, { file: 'js/' + state.recorder.recorderMode }, () => {
+            var tab = tabs[0];
+
+            if (isNullOrEmpty(tab)) {
+                return;
+            }
+
+            if (isIgnored(ignoreList, tab.url)) {
+                console.log('Page ' + tab.url + ' is ignored by Rhino Recorder')
+                return;
+            }
+
+            chrome.tabs.executeScript(tab.id, { file: 'js/' + state.recorder.recorderMode }, () => {
                 console.debug('Invoke-Script -' + state.recorder.recorderMode + ' = OK');
             });
         });

@@ -30,44 +30,50 @@ var recorderWindow = null;
 //
 //-- event handlers
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
-    // setup conditions
-    var isHttp = tabInfo.url.toUpperCase().startsWith("HTTP");
-    var isFtp = tabInfo.url.toUpperCase().startsWith("FTP");
-    var isFile = tabInfo.url.toUpperCase().startsWith("FILE");
+    chrome.storage.sync.get(['ignoreList'], (result) => {
+        // setup
+        var ignoreList = isNullOrEmpty(result.ignoreList) ? [] : result.ignoreList;
 
-    // exit condition
-    if (!isHttp && !isFtp && !isFile) {
-        return;
-    }
+        // setup conditions
+        var isHttp = tabInfo.url.toUpperCase().startsWith("HTTP");
+        var isFtp = tabInfo.url.toUpperCase().startsWith("FTP");
+        var isFile = tabInfo.url.toUpperCase().startsWith("FILE");
+        var ignored = isIgnored(ignoreList, tabInfo.url);
 
-    // is injected
-    if (getFlag()) {
-        return;
-    }
-
-    // integration scripts
-    var interval = setInterval(() => {
-        if (changeInfo.status !== 'complete') {
+        // exit condition
+        if ((!isHttp && !isFtp && !isFile) || ignored) {
             return;
         }
-        clearInterval(interval);
 
-        chrome.storage.sync.get(['recorderMode', 'isConnected'], (result) => {
-            var isResult = typeof (result) !== 'undefined' && result !== null;
-            var isMode = isResult && typeof (result.recorderMode) !== 'undefined' && result.recorderMode !== null;
-            var isConnected = isResult && result.isConnected === true;
-            var clientFile = isMode ? result.recorderMode : 'js/client.manual.js';
+        // is injected
+        if (getFlag()) {
+            return;
+        }
 
-            if (!isConnected) {
+        // integration scripts
+        var interval = setInterval(() => {
+            if (changeInfo.status !== 'complete') {
                 return;
             }
+            clearInterval(interval);
 
-            getRecorderClient(clientFile, false, () => {
-                console.debug('Update-Tab -ID ' + tabId + ' -File ' + clientFile + ' = OK');
-                setFlag(true);
+            chrome.storage.sync.get(['recorderMode', 'isConnected'], (result) => {
+                var isResult = typeof (result) !== 'undefined' && result !== null;
+                var isMode = isResult && typeof (result.recorderMode) !== 'undefined' && result.recorderMode !== null;
+                var isConnected = isResult && result.isConnected === true;
+                var clientFile = isMode ? result.recorderMode : 'js/client.manual.js';
+
+                if (!isConnected) {
+                    return;
+                }
+
+                getRecorderClient(clientFile, false, () => {
+                    console.debug('Update-Tab -ID ' + tabId + ' -File ' + clientFile + ' = OK');
+                    setFlag(true);
+                });
             });
-        });
-    }, 100);
+        }, 100);
+    });
 });
 
 //┌─[ API FACTORY ]─────────────────────────────┐
@@ -619,34 +625,32 @@ function getRecorder(port, request, sender) {
     // setup
     var messageBuilder = getMessageBuilder(C_BACKGROUND, request, sender);
 
-    chrome.storage.sync.get(['rhinoEndpoint'], (endpointResult) => {
-        chrome.storage.sync.get(['recorder'], (recorderResult) => {
-            // setup
-            var isEndpoint = typeof (endpointResult.rhinoEndpoint) !== 'undefined' && endpointResult.rhinoEndpoint !== null && endpointResult.rhinoEndpoint !== '';
-            var isRecorder = !isNullOrEmpty(recorderResult.recorder);
-            var isConnected = !isNullOrEmpty(recorderResult.recorder.isConnected) && recorderResult.recorder.isConnected;
+    chrome.storage.sync.get(['rhinoEndpoint', 'recorder'], (result) => {
+        // setup conditions
+        var isEndpoint = !isNullOrEmpty(result.rhinoEndpoint);
+        var isRecorder = !isNullOrEmpty(result.recorder);
+        var isConnected = !isNullOrEmpty(result.recorder.isConnected) && result.recorder.isConnected;
 
-            // exit condition
-            if (!isEndpoint || (isRecorder && isConnected)) {
-                var existsResponse = messageBuilder
-                    .withStatusCode(200)
-                    .withData('Get-Recorder = OK already open and/or connected')
-                    .build();
-                port.postMessage(existsResponse);
-                return;
-            }
+        // exit condition
+        if (!isEndpoint || (isRecorder && isConnected)) {
+            var existsResponse = messageBuilder
+                .withStatusCode(200)
+                .withData('Get-Recorder = OK already open and/or connected')
+                .build();
+            port.postMessage(existsResponse);
+            return;
+        }
 
-            // open
-            recorderWindow = window.open(
-                endpointResult.rhinoEndpoint,
-                '_blank',
-                'location=yes,height=' + window.screen.height.toString() + ',width=600,scrollbars=yes,status=yes',
-                true);
+        // open
+        recorderWindow = window.open(
+            result.rhinoEndpoint,
+            '_blank',
+            'location=yes,height=' + window.screen.height.toString() + ',width=600,scrollbars=yes,status=yes',
+            true);
 
-            // get
-            var createdResponse = messageBuilder.withStatusCode(201).withData('Get-Recorder = Created').build();
-            port.postMessage(createdResponse);
-        });
+        // get
+        var createdResponse = messageBuilder.withStatusCode(201).withData('Get-Recorder = Created').build();
+        port.postMessage(createdResponse);
     });
 }
 

@@ -98,7 +98,7 @@ function isServerOpen(windows) {
 function isIgnored(list, url) {
     // iterate
     for (var i = 0; i < list.length; i++) {
-        var ignored = list[i].match(url) !== null && list[i].match(url).length > 0;
+        var ignored = url.match(list[i]) !== null && url.match(list[i]).length > 0;
         if (ignored) {
             return true;
         }
