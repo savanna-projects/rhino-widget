@@ -25,195 +25,186 @@
 //
 "use strict";
 
-//┌─[ SETUP ]───────────────────────────────────┐
-//│                                             │
-//│ Set all global, static and constants.       │
-//└─────────────────────────────────────────────┘
-//
-//-- constants (A-Z)
-//
-//-- C --
-var C_CONNECTOR = "connector_azure";
-var C_CONTAINER_PATH =
-    "//div[@class='content-section']//div[@class='hub-content']|" +
-    "//div[@data-renderedregion='content' and @role='main']";
-//
-//-- P --
-var C_TEST_PATTERN = "(?<=planid=)\\d+";
-//
-//-- S --
-var C_SUITE_PATTERN = "(?<=suiteid=)\\d+";
+function mainAzure() {
+    //┌─[ SETUP ]───────────────────────────────────┐
+    //│                                             │
+    //│ Set all global, static and constants.       │
+    //└─────────────────────────────────────────────┘
+    //
+    //-- constants (A-Z)
+    //
+    //-- C --
+    var C_CONNECTOR = "connector_azure";
+    var C_CONTAINER_PATH =
+        "//div[@class='content-section']//div[@class='hub-content']|" +
+        "//div[@data-renderedregion='content' and @role='main']";
+    //
+    //-- P --
+    var C_TEST_PATTERN = "(?<=planid=)\\d+";
+    //
+    //-- S --
+    var C_SUITE_PATTERN = "(?<=suiteid=)\\d+";
 
-//┌─[ INTEGRATION INTERFACE ]───────────────────┐
-//│                                             │
-//│ An iImplementation of the integration API.  │
-//└─────────────────────────────────────────────┘
-//
-/**
-* Summary. Gets a value indicates if the page you are at is compliant with
-*          the conditions for running test cases.
-* 
-* @returns {boolean} True if compliant; False if not.
-*/
-function confirmSite() {
-    // setup conditions
-    var isContainer = document
-        .evaluate(C_CONTAINER_PATH, document, null, XPathResult.BOOLEAN_TYPE, null)
-        .booleanValue;
+    //┌─[ INTEGRATION INTERFACE ]───────────────────┐
+    //│                                             │
+    //│ An iImplementation of the integration API.  │
+    //└─────────────────────────────────────────────┘
+    //
+    /**
+    * Summary. Gets a value indicates if the page you are at is compliant with
+    *          the conditions for running test cases.
+    * 
+    * @returns {boolean} True if compliant; False if not.
+    */
+    function confirmSite() {
+        // setup conditions
+        var isContainer = document
+            .evaluate(C_CONTAINER_PATH, document, null, XPathResult.BOOLEAN_TYPE, null)
+            .booleanValue;
 
-    // get test plan
-    var testPlan = window.location.href.toLowerCase().match(C_TEST_PATTERN);
-    var isTestPlan = typeof (testPlan) !== "undefined" && testPlan !== null && testPlan !== ""
+        // get test plan
+        var testPlan = window.location.href.toLowerCase().match(C_TEST_PATTERN);
+        var isTestPlan = typeof (testPlan) !== "undefined" && testPlan !== null && testPlan !== ""
 
-    // get test suite
-    var testSuite = window.location.href.toLowerCase().match(C_SUITE_PATTERN);
-    var isTestSuite = typeof (testSuite) !== "undefined" && testSuite !== null && testSuite !== ""
+        // get test suite
+        var testSuite = window.location.href.toLowerCase().match(C_SUITE_PATTERN);
+        var isTestSuite = typeof (testSuite) !== "undefined" && testSuite !== null && testSuite !== ""
 
-    // assert
-    return isContainer && isTestPlan && isTestSuite;
-}
+        // assert
+        return isContainer && isTestPlan && isTestSuite;
+    }
 
-/**
-* Summary. Gets the container element on the site. Rhino Widget HTML will
-*          be injected into this container.
-*
-* @param {any} container The container into which to inject Rhino Widget HTML.
-*/
-function getContainer() {
-    // setup
-    var path = C_CONTAINER_PATH;
-
-    // get
-    return document
-        .evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-        .singleNodeValue;
-}
-
-/**
-* Summary. Gets a collection of connector capabilities based on the site state
-*
-* @returns {any} A collection capabilities.
-*/
-function getConnectorCapabilities() {
-    return _getConnectorCapabilities();
-}
-
-/**
-* Summary. Gets the test cases (runnable entities) from the page.
-*
-* @returns {Array} A collection of test cases (runnable entities).
-*/
-function getTestCases() {
-    return _getTestCases();
-}
-
-/**
-* Summary. Executes Rhino injection pipeline.
-* 
-* @param {any} interval The background worker holding the retry script.
-*/
-function startRhino(interval) {
-    try {
+    /**
+    * Summary. Gets the container element on the site. Rhino Widget HTML will
+    *          be injected into this container.
+    *
+    * @param {any} container The container into which to inject Rhino Widget HTML.
+    */
+    function getContainer() {
         // setup
-        var isSite = confirmSite();
+        var path = C_CONTAINER_PATH;
 
-        // exit conditions
-        if (!isSite) {
-            return;
+        // get
+        return document
+            .evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+            .singleNodeValue;
+    }
+
+    /**
+    * Summary. Gets a collection of connector capabilities based on the site state
+    *
+    * @returns {any} A collection capabilities.
+    */
+    function getConnectorCapabilities() {
+        return {
+            testPlan: parseInt(_getFromUrl(C_TEST_PATTERN)),
+            testSuite: parseInt(_getFromUrl(C_SUITE_PATTERN))
+        }
+    }
+
+    function _getFromUrl(regularExpression) {
+        // get test plan
+        var entity = window.location.href.toLowerCase().match(regularExpression);
+
+        // get
+        if (typeof (entity) !== "undefined" && entity !== null && entity !== "" && entity.length > 0) {
+            return entity[0];
+        }
+        return "-1";
+    }
+
+    /**
+    * Summary. Gets the test cases (runnable entities) from the page.
+    *
+    * @returns {Array} A collection of test cases (runnable entities).
+    */
+    function getTestCases() {
+        // setup
+        var idColumnPosition = _getIdColumnPosition();
+
+        // get
+        return _getTestCasesByPosition(idColumnPosition);
+    }
+
+    function _getIdColumnPosition() {
+        // get test case id column index
+        var columnsPath =
+            "//div[contains(@class,'grid-row-current') and contains(@id,'row_vss')]/ancestor::div[contains(@id,'vss')]/div[@class='grid-header']//div[@aria-label]|" +
+            "//div[@class='test-plan-author-tab']//th";
+        var elements = document.evaluate(columnsPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+        // find
+        for (var i = 0; i < elements.snapshotLength; i++) {
+            if (!elements.snapshotItem(i).innerText.match('ID|Test Case Id')) {
+                continue;
+            }
+            return i + 1;
+        }
+    }
+
+    function _getTestCasesByPosition(idColumnPosition) {
+        // setup
+        var idPath =
+            "//div[contains(@class,'grid-row-selected') and contains(@id,'row_vss')]/div[" + idColumnPosition + "]" + "|" +
+            "//div[@class='test-plan-author-tab']//tr[contains(@class,'selected')]/td[" + idColumnPosition + "]";
+        var elements = document.evaluate(idPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+        // build
+        var testCases = [];
+        for (var i = 0; i < elements.snapshotLength; i++) {
+            testCases.push(elements.snapshotItem(i).innerText);
         }
 
-        // interval completed
-        clearInterval(interval);
+        // get
+        return testCases;
+    }
 
-        // setup - inject
-        var container = getContainer();
-        var testsDataFactory = () => {
-            // build
-            var data = {
-                testCases: _getTestCases()
-            };
-            data["capabilities"] = {};
-            data["capabilities"][C_CONNECTOR + ":options"] = _getConnectorCapabilities();
+    /**
+    * Summary. Executes Rhino injection pipeline.
+    * 
+    * @param {any} interval The background worker holding the retry script.
+    */
+    function startRhino(interval) {
+        try {
+            // setup
+            var isSite = confirmSite();
 
-            // get
-            return data;
+            // exit conditions
+            if (!isSite) {
+                return;
+            }
+
+            // interval completed
+            clearInterval(interval);
+
+            // setup - inject
+            var container = getContainer();
+            var testsDataFactory = () => {
+                // build
+                var data = {
+                    testCases: getTestCases()
+                };
+                data["capabilities"] = {};
+                data["capabilities"][C_CONNECTOR + ":options"] = getConnectorCapabilities();
+
+                // get
+                return data;
+            }
+
+            // expose on UI
+            setRhino(container, () => testsDataFactory());
+        } catch (e) {
+            console.error('Start-Rhino = 500 internal server error')
+            console.error(e);
         }
-
-        // expose on UI
-        setRhino(container, () => testsDataFactory());
-    } catch (e) {
-        console.error('Start-Rhino = 500 internal server error')
-        console.error(e);
-    }
-}
-
-//┌─[ PRIVATE METHODS ]─────────────────────────┐
-//└─────────────────────────────────────────────┘
-//
-// collect test cases from application DOM
-function _getTestCases() {
-    // setup
-    var idColumnPosition = _getIdColumnPosition();
-
-    // get
-    return _getTestCasesByPosition(idColumnPosition);
-}
-
-function _getIdColumnPosition() {
-    // get test case id column index
-    var columnsPath =
-        "//div[contains(@class,'grid-row-current') and contains(@id,'row_vss')]/ancestor::div[contains(@id,'vss')]/div[@class='grid-header']//div[@aria-label]|" +
-        "//div[@class='test-plan-author-tab']//th";
-    var elements = document.evaluate(columnsPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-    // find
-    for (var i = 0; i < elements.snapshotLength; i++) {
-        if (!elements.snapshotItem(i).innerText.match('ID|Test Case Id')) {
-            continue;
-        }
-        return i + 1;
-    }
-}
-
-function _getTestCasesByPosition(idColumnPosition) {
-    // setup
-    var idPath =
-        "//div[contains(@class,'grid-row-selected') and contains(@id,'row_vss')]/div[" + idColumnPosition + "]" + "|" +
-        "//div[@class='test-plan-author-tab']//tr[contains(@class,'selected')]/td[" + idColumnPosition + "]";
-    var elements = document.evaluate(idPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-    // build
-    var testCases = [];
-    for (var i = 0; i < elements.snapshotLength; i++) {
-        testCases.push(elements.snapshotItem(i).innerText);
     }
 
-    // get
-    return testCases;
+    //┌─[ BACKGROUND WORKER ]───────────────────────┐
+    //│                                             │
+    //│ Evaluates the site every second and injects │
+    //│ Rhino Widget is the site is compliant.      │
+    //└─────────────────────────────────────────────┘
+    var interval = setInterval(() => startRhino(interval), 1000);
 }
 
-// collect explicit capabilities of this connector
-function _getConnectorCapabilities() {
-    return {
-        testPlan: parseInt(_getFromUrl(C_TEST_PATTERN)),
-        testSuite: parseInt(_getFromUrl(C_SUITE_PATTERN))
-    }
-}
-
-function _getFromUrl(regularExpression) {
-    // get test plan
-    var entity = window.location.href.toLowerCase().match(regularExpression);
-
-    // get
-    if (typeof (entity) !== "undefined" && entity !== null && entity !== "" && entity.length > 0) {
-        return entity[0];
-    }
-    return "-1";
-}
-
-//┌─[ BACKGROUND WORKER ]───────────────────────┐
-//│                                             │
-//│ Evaluates the site every second and injects │
-//│ Rhino Widget is the site is compliant.      │
-//└─────────────────────────────────────────────┘
-var interval = setInterval(() => startRhino(interval), 1000);
+mainAzure();
