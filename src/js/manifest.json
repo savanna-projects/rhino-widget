@@ -36,6 +36,9 @@
         "js/integration.html.js",
         "js/integration.js",
         "js/integration.azure.js",
+        "js/integration.xray.cloud.js",
+        "js/integration.xray.onprem.js",
+        "js/integration.gurock.cloud.js",
         "js/recorder.js"
       ]
     }

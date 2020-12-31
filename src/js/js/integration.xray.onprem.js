@@ -33,16 +33,8 @@
 //-- constants (A-Z)
 //
 //-- C --
-var C_CONNECTOR = "connector_azure";
-var C_CONTAINER_PATH =
-    "//div[@class='content-section']//div[@class='hub-content']|" +
-    "//div[@data-renderedregion='content' and @role='main']";
-//
-//-- P --
-var C_TEST_PATTERN = "(?<=planid=)\\d+";
-//
-//-- S --
-var C_SUITE_PATTERN = "(?<=suiteid=)\\d+";
+var C_CONNECTOR = "connector_xray";
+var C_CONTAINER_PATH = "//div[@class='aui-item issue-main-column']";
 
 //┌─[ INTEGRATION INTERFACE ]───────────────────┐
 //│                                             │
@@ -57,20 +49,13 @@ var C_SUITE_PATTERN = "(?<=suiteid=)\\d+";
 */
 function confirmSite() {
     // setup conditions
-    var isContainer = document
+    var isPath = document
         .evaluate(C_CONTAINER_PATH, document, null, XPathResult.BOOLEAN_TYPE, null)
         .booleanValue;
-
-    // get test plan
-    var testPlan = window.location.href.toLowerCase().match(C_TEST_PATTERN);
-    var isTestPlan = typeof (testPlan) !== "undefined" && testPlan !== null && testPlan !== ""
-
-    // get test suite
-    var testSuite = window.location.href.toLowerCase().match(C_SUITE_PATTERN);
-    var isTestSuite = typeof (testSuite) !== "undefined" && testSuite !== null && testSuite !== ""
+    var isUrl = !window.location.href.includes("atlassian.net")
 
     // assert
-    return isContainer && isTestPlan && isTestSuite;
+    return isPath && isUrl;
 }
 
 /**
@@ -95,7 +80,7 @@ function getContainer() {
 * @returns {any} A collection capabilities.
 */
 function getConnectorCapabilities() {
-    return _getConnectorCapabilities();
+    _getConnectorCapabilities();
 }
 
 /**
@@ -150,43 +135,21 @@ function startRhino(interval) {
 //┌─[ PRIVATE METHODS ]─────────────────────────┐
 //└─────────────────────────────────────────────┘
 //
-// collect test cases from application DOM
+// collect test cases from application DO
 function _getTestCases() {
+    // extract issue id
+    var id = document.title.match("(?<=\\[).*?(?=])");
+
     // setup
-    var idColumnPosition = _getIdColumnPosition();
-
-    // get
-    return _getTestCasesByPosition(idColumnPosition);
-}
-
-function _getIdColumnPosition() {
-    // get test case id column index
-    var columnsPath =
-        "//div[contains(@class,'grid-row-current') and contains(@id,'row_vss')]/ancestor::div[contains(@id,'vss')]/div[@class='grid-header']//div[@aria-label]|" +
-        "//div[@class='test-plan-author-tab']//th";
-    var elements = document.evaluate(columnsPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-    // find
-    for (var i = 0; i < elements.snapshotLength; i++) {
-        if (!elements.snapshotItem(i).innerText.match('ID|Test Case Id')) {
-            continue;
-        }
-        return i + 1;
-    }
-}
-
-function _getTestCasesByPosition(idColumnPosition) {
-    // setup
-    var idPath =
-        "//div[contains(@class,'grid-row-selected') and contains(@id,'row_vss')]/div[" + idColumnPosition + "]" + "|" +
-        "//div[@class='test-plan-author-tab']//tr[contains(@class,'selected')]/td[" + idColumnPosition + "]";
-    var elements = document.evaluate(idPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-    // build
     var testCases = [];
-    for (var i = 0; i < elements.snapshotLength; i++) {
-        testCases.push(elements.snapshotItem(i).innerText);
+
+    // validate
+    if (id.length === 0) {
+        return testCases;
     }
+
+    // add to collection
+    testCases.push(id[0]);
 
     // get
     return testCases;
@@ -194,21 +157,7 @@ function _getTestCasesByPosition(idColumnPosition) {
 
 // collect explicit capabilities of this connector
 function _getConnectorCapabilities() {
-    return {
-        testPlan: parseInt(_getFromUrl(C_TEST_PATTERN)),
-        testSuite: parseInt(_getFromUrl(C_SUITE_PATTERN))
-    }
-}
-
-function _getFromUrl(regularExpression) {
-    // get test plan
-    var entity = window.location.href.toLowerCase().match(regularExpression);
-
-    // get
-    if (typeof (entity) !== "undefined" && entity !== null && entity !== "" && entity.length > 0) {
-        return entity[0];
-    }
-    return "-1";
+    return {}
 }
 
 //┌─[ BACKGROUND WORKER ]───────────────────────┐
@@ -216,4 +165,5 @@ function _getFromUrl(regularExpression) {
 //│ Evaluates the site every second and injects │
 //│ Rhino Widget is the site is compliant.      │
 //└─────────────────────────────────────────────┘
+//
 var interval = setInterval(() => startRhino(interval), 1000);
