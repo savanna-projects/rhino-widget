@@ -149,13 +149,21 @@ function ping(port, request, sender) {
         : endpoint + route;
 
     // get
-    get(endpoint, (response) => {
-        var okResponse = messageBuilder.withStatusCode(200).withData(response).build();
-        port.postMessage(okResponse);
-    }, () => {
+    try {
+        get(endpoint, (response) => {
+            var okResponse = messageBuilder.withStatusCode(200).withData(response).build();
+            port.postMessage(okResponse);
+        }, () => {
             var serverErrorResponse = messageBuilder.withStatusCode(500).withData(response).build();
             port.postMessage(serverErrorResponse);
-    });
+        });
+    } catch (e) {
+        var errorResponse = messageBuilder
+            .withStatusCode(500)
+            .withData(e.message)
+            .build();
+        port.postMessage(errorResponse);
+    }
 }
 
 // GET /api/connect
@@ -341,11 +349,11 @@ function _getSettings(data) {
 
     // exit conditions
     if (isNullOrEmpty(endpoint)) {
-        var eendpointBody = messageBuilder
+        var endpointBody = messageBuilder
             .withStatusCode(404)
             .withData('Get-RhinoEndpoint = 404 not found')
             .build();
-        data.port.postMessage(eendpointBody);
+        data.port.postMessage(endpointBody);
         return;
     }
 
@@ -355,17 +363,25 @@ function _getSettings(data) {
         : data.settingsResult;
 
     // connectors
-    get(endpoint + R_CONNECTORS, (connectors) => {
-        // drivers
-        get(endpoint + R_DRIVERS,
-            (drivers) => _onSuccess(data.port, data.request, {
-                connectors: connectors,
-                drivers: drivers,
-                endpoint: endpoint,
-                settings: settings
-            }, data.sender),
-            () => _onError(data.port, data.request, _getError500Message('Get-Drivers', data.request.route), data.sender));
-    }, () => _onError(data.port, data.request, _getError500Message('Get-Connectors', data.request.route), data.sender));
+    try {
+        get(endpoint + R_CONNECTORS, (connectors) => {
+            // drivers
+            get(endpoint + R_DRIVERS,
+                (drivers) => _onSuccess(data.port, data.request, {
+                    connectors: connectors,
+                    drivers: drivers,
+                    endpoint: endpoint,
+                    settings: settings
+                }, data.sender),
+                () => _onError(data.port, data.request, _getError500Message('Get-Drivers', data.request.route), data.sender));
+        }, () => _onError(data.port, data.request, _getError500Message('Get-Connectors', data.request.route), data.sender));
+    } catch (e) {
+        var errorBody = messageBuilder
+            .withStatusCode(500)
+            .withData(e.message)
+            .build();
+        data.port.postMessage(errorBody);
+    }
 }
 
 function _onSuccess(port, request, responseData, sender) {

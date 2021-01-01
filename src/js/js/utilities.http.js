@@ -4,31 +4,27 @@
  * @param {any} routing   Endpoint to which send the request.
  * @param {any} onSuccess Success callback action.
  * @param {any} onError   Error callback action.
+ * @param {any} onAlways  Finalize callback action, will always be executed
  */
-function get(routing, onSuccess, onError) {
-    try {
-        // setup
-        var xmlHttp = new XMLHttpRequest();
+function get(routing, onSuccess, onError, onAlways) {
+    // setup
+    var xmlHttp = new XMLHttpRequest();
 
-        // async waiter
-        xmlHttp.onreadystatechange = () => {
-            if (xmlHttp.readyState === 4 && xmlHttp.status >= 200) {
-                onSuccess(xmlHttp.responseText);
-            }
+    // async waiter
+    xmlHttp.onreadystatechange = () => {
+        if (xmlHttp.readyState === 4 && xmlHttp.status >= 200) {
+            onSuccess(xmlHttp.responseText);
         }
-
-        // error handler
-        xmlHttp.onerror = () => {
-            onError(xmlHttp.responseText);
-        }
-
-        // async call
-        xmlHttp.open("GET", routing, true);
-        xmlHttp.send(null);
-    } catch (e) {
-        console.error(e);
-        console.error("Error while calling the Web API on [" + routing + "]");
     }
+
+    // error handler
+    xmlHttp.onerror = () => {
+        onError(xmlHttp.responseText);
+    }
+
+    // async call
+    xmlHttp.open("GET", routing, true);
+    xmlHttp.send(null);
 }
 
 /**
