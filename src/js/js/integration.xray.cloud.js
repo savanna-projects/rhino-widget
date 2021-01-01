@@ -114,39 +114,21 @@ function mainXrayCloud() {
     * 
     * @param {any} interval The background worker holding the retry script.
     */
-    function startRhino(interval) {
-        try {
-            // setup
-            var isSite = confirmSite();
+    function startRhino() {
+        // setup
+        var serviceBuilder = new RhinoServiceBuilder();
 
-            // exit conditions
-            if (!isSite) {
-                return;
-            }
-
-            // interval completed
-            clearInterval(interval);
-
-            // setup - inject
-            var container = getContainer();
-            var testsDataFactory = () => {
-                // build
-                var data = {
-                    testCases: getTestCases()
-                };
-                data["capabilities"] = {};
-                data["capabilities"][C_CONNECTOR + ":options"] = getConnectorCapabilities();
-
-                // get
-                return data;
-            }
-
-            // expose on UI
-            setRhino(container, () => testsDataFactory());
-        } catch (e) {
-            console.error('Start-Rhino = 500 internal server error')
-            console.error(e);
-        }
+        // build
+        serviceBuilder
+            .setConnector(C_CONNECTOR)
+            .setConfirmSiteCondition(confirmSite)
+            .setConnectorCapabilitiesFactory(getConnectorCapabilities)
+            .setContainerFactory(getContainer)
+            .setTestsFactory(getTestCases)
+            .setExistsCondition(isRhinoExists)
+            .setInjectMethod(setRhino)
+            .setPersistent(true)
+            .start(interval);
     }
 
     //┌─[ BACKGROUND WORKER ]───────────────────────┐
@@ -154,8 +136,7 @@ function mainXrayCloud() {
     //│ Evaluates the site every second and injects │
     //│ Rhino Widget is the site is compliant.      │
     //└─────────────────────────────────────────────┘
-    //
-    var interval = setInterval(() => startRhino(interval), 1000);
+    var interval = setInterval(() => startRhino(), getIntervalTime());
 }
 
 mainXrayCloud();

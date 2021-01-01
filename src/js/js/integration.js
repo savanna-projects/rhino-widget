@@ -160,8 +160,8 @@ function invokeAutomationOut(data) {
  */
 function setRhino(container, testsDataFactory, html) {
     // setup conditions
-    var isContainer = typeof (container) !== 'undefined' && container !== null && container !== '';
-    var isHtml = typeof (html) !== 'undefined' && html !== null && html !== '';
+    var isContainer = !isNullOrEmpty(container);
+    var isHtml = !isNullOrEmpty(html);
 
     // exit conditions
     if (isContainer === null) {
@@ -173,7 +173,7 @@ function setRhino(container, testsDataFactory, html) {
     var node = htmlToDom(_html);
     var _runTests = () => {
         var testCasesData = testsDataFactory(); // collect (by local collector)
-        _invokeAutomation(testCasesData);          // run (by common runner)
+        _invokeAutomation(testCasesData);       // run (by common runner)
     }
 
     // inject
@@ -185,6 +185,18 @@ function setRhino(container, testsDataFactory, html) {
 
     // settings
     getSettingsOut();
+}
+
+function isRhinoExists() {
+    // setup
+    var rhino = document.getElementById('rh_rhino_module');
+
+    // get
+    return !isNullOrEmpty(rhino);
+}
+
+function getIntervalTime(milliseconds) {
+    return isNullOrEmpty(milliseconds) ? 5000 : milliseconds;
 }
 
 // PRIVATE METHODS
