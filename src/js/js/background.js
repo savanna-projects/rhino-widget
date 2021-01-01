@@ -629,10 +629,10 @@ function getRecorder(port, request, sender) {
         // setup conditions
         var isEndpoint = !isNullOrEmpty(result.rhinoEndpoint);
         var isRecorder = !isNullOrEmpty(result.recorder);
-        var isConnected = !isNullOrEmpty(result.recorder.isConnected) && result.recorder.isConnected;
+        var isConnected = isRecorder && !isNullOrEmpty(result.recorder.isConnected) && result.recorder.isConnected;
 
         // exit condition
-        if (!isEndpoint || (isRecorder && isConnected)) {
+        if (!isEndpoint || (isConnected)) {
             var existsResponse = messageBuilder
                 .withStatusCode(200)
                 .withData('Get-Recorder = OK already open and/or connected')

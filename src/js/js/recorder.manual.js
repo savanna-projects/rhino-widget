@@ -1,6 +1,6 @@
-const TITLE = "Rhino Widget - nygGKTtD";
-
 function main() {
+    var TITLE = "Rhino Widget - nygGKTtD";
+
     // validation
     var isRhino = document.title === TITLE;
     if (isRhino) {
