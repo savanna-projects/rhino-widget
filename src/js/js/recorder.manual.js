@@ -1,5 +1,6 @@
 function main() {
     var TITLE = "Rhino Widget - nygGKTtD";
+    var C_RECORDER = "recorder";
 
     // validation
     var isRhino = document.title === TITLE;
@@ -54,7 +55,6 @@ function main() {
         try {
             var m = getMessage(last_element);
             postRecorderMessage(m);
-            //port.postMessage(m);
         }
         catch (exception) {
             console.warn(exception);
@@ -88,14 +88,15 @@ function main() {
 
     function postRecorderMessage(message) {
         // build
-        var requestBody = getRequest('recorder', '/api/postRecorderMessage', message);
+        var requestBody = {
+            from: C_RECORDER,
+            route: '/api/postRecorderMessage',
+            data: message,
+            action: 'recorderMessage'
+        };
 
         // get
         port.postMessage(requestBody);
-    }
-
-    function getRecorderHandler() {
-
     }
 
     // Summary. Adds mouseover listener into host page

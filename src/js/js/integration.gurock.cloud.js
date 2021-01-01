@@ -148,7 +148,7 @@ function mainTestRail() {
     //│ Evaluates the site every second and injects │
     //│ Rhino Widget is the site is compliant.      │
     //└─────────────────────────────────────────────┘
-    setInterval(() => startRhino(), getIntervalTime());
+    var interval = setInterval(() => startRhino(), getIntervalTime());
 }
 
 mainTestRail();
