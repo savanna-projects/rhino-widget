@@ -147,7 +147,7 @@ class RhinoServiceBuilder {
         this.confirmSite = () => console.debug('confirmSite not implemented.');
         this.exists = () => console.debug('exists not implemented.');
         this.container = () => console.debug('container not implemented.');
-        this.tests = () => console.debug('tests not implemented.');
+        this.testCases = () => console.debug('tests not implemented.');
         this.connectorCapabilities = () => console.debug('connectorCapabilities not implemented.');
         this.inject = () => console.debug('inject not implemented.');
     }
@@ -196,7 +196,7 @@ class RhinoServiceBuilder {
     * @returns {RhinoServiceBuilder} Self reference of this MessageBuilder.
     */
     setTestsFactory(func) {
-        this.tests = func;
+        this.testCases = func;
         return this;
     }
 
