@@ -172,7 +172,7 @@ function connect(port, request, sender) {
     get(request.data.endpoint + R_CONNECTORS, (connectors) => {
         // drivers
         get(request.data.endpoint + R_DRIVERS,
-            (drivers) => _onSuccess(port, request.route, {
+            (drivers) => _onSuccess(port, request, {
                 connectors: connectors,
                 drivers: drivers,
                 endpoint: request.data.endpoint,
