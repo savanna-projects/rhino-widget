@@ -256,7 +256,10 @@ function importSettings(settingsFile) {
     reader.onload = () => {
         var json = reader.result;
         var statObj = JSON.parse(json);
-        loadAllSettings(statObj);
+
+        loadIntegrationSettings(statObj);
+        loadPlaybackOptions(statObj);
+        loadRhinoOptions(statObj);
     };
     reader.onerror = (e) => {
         setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);
