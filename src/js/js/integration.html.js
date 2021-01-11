@@ -11,177 +11,9 @@
 function getRhinoWidgetHtml() {
     return `
 <div id="rh_rhino_module" style="margin: 15px; min-width: 50%; max-width: 100%;">
-    <style type="text/css" id="norm.css" scoped>
-        /*┌─[ NORMALIZE.CSS ]───────────────────────────┐
-          │                                             │
-          │ Responsible cross browser consistency       │
-          │ https://github.com/necolas/normalize.css    │
-          └─────────────────────────────────────────────┘*/
-        h1 {
-            font-size: 2em;
-            margin: 0.67em 0;
-        }
-
-        hr {
-            box-sizing: content-box;
-            height: 0;
-            overflow: visible;
-        }
-
-        pre {
-            font-family: monospace, monospace;
-            font-size: 1em;
-        }
-
-        a {
-            background-color: transparent;
-        }
-
-        abbr[title] {
-            border-bottom: none;
-            text-decoration: underline;
-            text-decoration: underline dotted;
-        }
-
-        b,
-        strong {
-            font-weight: bolder;
-        }
-
-        code,
-        kbd,
-        samp {
-            font-family: monospace, monospace;
-            font-size: 1em;
-        }
-
-        small {
-            font-size: 80%;
-        }
-
-        sub,
-        sup {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: baseline;
-        }
-
-        sub {
-            bottom: -0.25em;
-        }
-
-        sup {
-            top: -0.5em;
-        }
-
-        img {
-            border-style: none;
-        }
-
-        button,
-        input,
-        optgroup,
-        select,
-        textarea {
-            font-family: inherit;
-            font-size: 100%;
-            line-height: 1.15;
-            margin: 0;
-        }
-
-        button,
-        input {
-            overflow: visible;
-        }
-
-        button,
-        select {
-            text-transform: none;
-        }
-
-        button,
-        [type="button"],
-        [type="reset"],
-        [type="submit"] {
-            -webkit-appearance: button;
-        }
-
-            button::-moz-focus-inner,
-            [type="button"]::-moz-focus-inner,
-            [type="reset"]::-moz-focus-inner,
-            [type="submit"]::-moz-focus-inner {
-                border-style: none;
-                padding: 0;
-            }
-
-            button:-moz-focusring,
-            [type="button"]:-moz-focusring,
-            [type="reset"]:-moz-focusring,
-            [type="submit"]:-moz-focusring {
-                outline: 1px dotted ButtonText;
-            }
-
-        fieldset {
-            padding: 0.35em 0.75em 0.625em;
-        }
-
-        legend {
-            box-sizing: border-box;
-            color: inherit;
-            display: table;
-            max-width: 100%;
-            padding: 0;
-            white-space: normal;
-        }
-
-        progress {
-            vertical-align: baseline;
-        }
-
-        textarea {
-            overflow: auto;
-        }
-
-        [type="checkbox"],
-        [type="radio"] {
-            box-sizing: border-box;
-            padding: 0;
-        }
-
-        [type="number"]::-webkit-inner-spin-button,
-        [type="number"]::-webkit-outer-spin-button {
-            height: auto;
-        }
-
-        [type="search"] {
-            -webkit-appearance: textfield;
-            outline-offset: -2px;
-        }
-
-            [type="search"]::-webkit-search-decoration {
-                -webkit-appearance: none;
-            }
-
-        ::-webkit-file-upload-button {
-            -webkit-appearance: button;
-            font: inherit;
-        }
-
-        details {
-            display: block;
-        }
-
-        summary {
-            display: list-item;
-        }
-
-        template {
-            display: none;
-        }
-
-        .hidden, [hidden] {
-            display: none !important;
+    <style type="text/css" id="ratio.css" scoped>
+        :root{
+            --ratio: 0.75;
         }
     </style>
 
@@ -200,7 +32,7 @@ function getRhinoWidgetHtml() {
         .rhino-grid-container-1-15 {
             user-select: none;
             font-family: Tahoma, sans-serif;
-            margin: 15px;
+            margin: calc(1em * var(--ratio));
             padding: 0px;
         }
 
@@ -262,53 +94,53 @@ function getRhinoWidgetHtml() {
             height: 100%
         }
 
-            .middleable .middle {
-                display: table-cell;
-                vertical-align: middle;
-            }
+        .middleable .middle {
+            display: table-cell;
+            vertical-align: middle;
+        }
 
         .rhino-mr-5 {
-            margin-right: 5px;
+            margin-right: calc(0.5em * var(--ratio));
         }
 
         .rhino-mr-10 {
-            margin-right: 10px;
+            margin-right: calc(1em * var(--ratio));
         }
 
         .rhino-mr-15 {
-            margin-right: 15px;
+            margin-right: calc(1.5em * var(--ratio));
         }
 
         .rhino-ml-15 {
-            margin-left: 15px;
+            margin-left: calc(1.5em * var(--ratio));
         }
 
         .rhino-mt-5 {
-            margin-top: 15px;
+            margin-top: calc(0.5em * var(--ratio));
         }
 
         .rhino-mt-15 {
-            margin-top: 15px;
+            margin-top: calc(1.5em * var(--ratio));
         }
 
         .rhino-mb-15 {
-            margin-bottom: 15px;
+            margin-bottom: calc(1.5em * var(--ratio));
         }
 
         .rhino-pl-15 {
-            padding-left: 15px;
+            padding-left: calc(1.5em * var(--ratio));
         }
 
         .rhino-pt-15 {
-            padding-top: 15px;
+            padding-top: calc(1.5em * var(--ratio));
         }
 
         .rhino-m-15 {
-            margin: 15px;
+            margin: calc(1.5em * var(--ratio));
         }
 
         .rhino-p-15 {
-            padding: 15px;
+            padding: calc(1.5em * var(--ratio));
         }
     </style>
 
@@ -333,16 +165,18 @@ function getRhinoWidgetHtml() {
         .rhino-body {
             background: var(--white);
         }
+
         .rhino-top-bar {
             -webkit-tap-highlight-color: rgba(0,0,0,0);
-            font-size: 14px;
+            font-size: calc(1em * var(--ratio));
             color: var(--white);
             box-sizing: border-box;
             user-select: none;
             display: block;
+            padding: calc(1em * var(--ratio));
             position: relative;
             background: var(--background-black);
-            height: 45px;
+            min-height: calc(3em * var(--ratio));
         }
 
             .rhino-top-bar a {
@@ -359,11 +193,11 @@ function getRhinoWidgetHtml() {
             box-sizing: border-box;
             display: block;
             position: relative;
-            min-height: 50px;
+            min-height: calc(3.5em * var(--ratio));
             background: var(--white);
             border: none;
             border-radius: 0px;
-            padding: 0px 0px 0px 0px;
+            padding: calc(1em * var(--ratio));
             margin-bottom: 0px;
             border-bottom: 1px solid var(--border-panel);
             box-shadow: 0 0 65px rgba(0,0,0,.09);
@@ -379,11 +213,11 @@ function getRhinoWidgetHtml() {
         }
 
         .rhino-font-700 {
-            font-size: 30px;
+            font-size: calc(2em * var(--ratio));
         }
 
         .rhino-font-700-s {
-            font-size: 24px;
+            font-size: calc(1.7em * var(--ratio));
         }
 
         .rhino-font-700,
@@ -392,11 +226,11 @@ function getRhinoWidgetHtml() {
         }
 
         .rhino-font-500 {
-            font-size: 20px;
+            font-size: calc(1.4em * var(--ratio));
         }
 
         .rhino-font-500-s {
-            font-size: 15px;
+            font-size: calc(1em * var(--ratio));
         }
 
         .rhino-font-500,
@@ -405,11 +239,11 @@ function getRhinoWidgetHtml() {
         }
 
         .rhino-font-300 {
-            font-size: 20px;
+            font-size: calc(1.4em * var(--ratio));
         }
 
         .rhino-font-300-s {
-            font-size: 15px;
+            font-size: calc(1em * var(--ratio));
         }
 
         .rhino-font-300,
@@ -422,15 +256,15 @@ function getRhinoWidgetHtml() {
             margin: 0;
             text-transform: none;
             font-weight: 500 !important;
-            font-size: 15px;
+            font-size: calc(1em * var(--ratio));
             background: var(--white);
             color: var(--primary-black) !important;
             outline: none;
             width: 100%;
-            padding: 12px;
+            padding: calc(0.8em * var(--ratio));
             transition: .3s;
-            height: 51px;
-            border-radius: 5px;
+            height: calc(3.5em * var(--ratio));
+            border-radius: 0px;
             border: 1px solid var(--border-input);
         }
 
@@ -441,14 +275,14 @@ function getRhinoWidgetHtml() {
             margin: 0;
             max-width: 100%;
             font-weight: 500 !important;
-            border-radius: 5px;
-            font-size: 15px;
+            border-radius: 0px;
+            font-size: calc(1em * var(--ratio));
             border: 1px solid var(--border-input);
             background: var(--background-input);
             color: var(--primary-black) !important;
             outline: none;
             width: 100%;
-            padding: 12px;
+            padding: calc(0.8em * var(--ratio));
             transition-duration: 0.4s;
         }
 
@@ -462,14 +296,14 @@ function getRhinoWidgetHtml() {
         input[type=number],
         textarea,
         select {
-            min-width: 300px;
+            min-width: calc(25em * var(--ratio));
         }
 
         textarea {
             font-family: "Courier New", Courier, monospace;
             overflow: auto;
             transition-duration: 0.4s;
-            min-height: 100px;
+            min-height: calc(6.25em * var(--ratio));
         }
 
         input[type=checkbox] {
@@ -477,14 +311,11 @@ function getRhinoWidgetHtml() {
         }
 
         label .rhino-checkbox {
-            height: 13px;
-            width: 13px;
-            border: 1px solid black;
+            height: calc(1em * var(--ratio));
+            width: calc(1em * var(--ratio));
+            border: 1px solid var(--primary-black);
             display: inline-block;
-            margin-right: 5px;
-            margin-bottom: 3px;
-            vertical-align: middle;
-            border-radius: 3px;
+            margin-right: calc(0.5em * var(--ratio));
         }
 
         [type=checkbox]:checked + span {
@@ -493,7 +324,7 @@ function getRhinoWidgetHtml() {
 
         .rhino-label-checkbox {
             font-weight: 500 !important;
-            font-size: 13px;
+            font-size: calc(0.8em * var(--ratio));
             color: #111 !important;
             display: flex;
             align-items: center;
@@ -506,15 +337,15 @@ function getRhinoWidgetHtml() {
             cursor: pointer;
             outline: 0 none;
             border: none;
-            border-radius: 5px !important;
+            border-radius: 0px;
             background: var(--primary-black);
             color: var(--white);
             transition-duration: .3s;
             display: inline-block;
-            font-size: 14px;
+            font-size: calc(1em * var(--ratio));
             font-weight: 500;
-            padding: 13px 25px 13px 25px;
-            min-height: 43px;
+            padding: calc(1em * var(--ratio)) calc(2em * var(--ratio)) calc(1em * var(--ratio)) calc(2em * var(--ratio));
+            min-height: calc(3em * var(--ratio));
         }
 
             .rhino-button-dark:hover {
@@ -532,8 +363,8 @@ function getRhinoWidgetHtml() {
     <!-- Container Wrapper -->
     <div class="rhino-grid-container rhino-body">
         <!-- Header -->
-        <div class="rhino-grid-template-areas rhino-p-15 rhino-top-bar">
-            <div class="rhino-grid-container-3-1">
+        <div class="rhino-grid-template-areas rhino-top-bar">
+            <div class="rhino-grid-container-3-1 rhino-ml-10">
                 <div class="rhino-grid-template-areas rhino-mr-10">
                     <a target="_blank"
                        href="https://github.com/savanna-projects"
@@ -559,7 +390,7 @@ function getRhinoWidgetHtml() {
         </div>
 
         <!-- Title -->
-        <div class="rhino-grid-template-areas rhino-top-panel" style="padding: 15px;">
+        <div class="rhino-grid-template-areas rhino-top-panel">
             <span class="rhino-font-700 rhino-primary-black">Rhino</span><span class="rhino-font-700 rhino-primary-red">API</span><br />
             <span class="rhino-font-300 rhino-primary-black">Automation Integrator</span>
         </div>
@@ -577,7 +408,7 @@ function getRhinoWidgetHtml() {
                     <span class="rhino-font-700-s rhino-primary-black">Integration Settings</span>
                 </div>
                 <!-- Playback Settings Wrapper -->
-                <div class="rhino-grid-container-2-5" style="margin: 0; padding: 0; margin-right: 15px;">
+                <div class="rhino-grid-container-2-5" style="margin-top:0;">
                     <div class="rhino-grid-template-areas rhino-mr-10 rhino-middleable">
                         <span class="rhino-font-500-s rhino-middle"
                               title="Browser or platform on which this test or set will run.">
@@ -621,7 +452,7 @@ function getRhinoWidgetHtml() {
                     </div>
 
                     <div class="rhino-grid-template-areas rhino-mr-10">
-                        <span class="rhino-rhino-font-500-s"
+                        <span class="rhino-font-500-s"
                               title="The capabilities of the selected platform as supported by the respective vendor.">
                             Driver Capabilities:
                         </span>
@@ -642,7 +473,7 @@ function getRhinoWidgetHtml() {
                 </div>
                 <!-- Integration Settings Wrapper -->
                 <div class="rhino-grid-container-1-15" style="margin: 0; padding: 0;">
-                    <div class="rhino-grid-template-areas rhino-mr-5 rhino-middleable">
+                    <div class="rhino-grid-template-areas rhino-mr-5">
                         <label class="rhino-font-500-s rhino-middle"
                                title="Check for creating test run reports under the integrated system (i.e. Jira, Azure DevOps, etc.)">
                             <input type="checkbox" id="rh_create_execution">
@@ -650,16 +481,16 @@ function getRhinoWidgetHtml() {
                             <span class="rhino-primary-black">Create Execution</span>
                         </label>
                     </div>
-                    <div class="rhino-grid-template-areas rhino-mr-5 rhino-middleable">
-                        <label class="rhino-font-500-s rhino-middle"
+                    <div class="rhino-grid-template-areas rhino-mr-5">
+                        <label class="rhino-font-500-s"
                                title="Check for activating Bugs Manager for this run. Bugs Manager will open, close and update bugs during the run.">
                             <input type="checkbox" id="rh_open_close_bugs">
                             <span class="rhino-checkbox"></span>
                             <span class="rhino-primary-black">Open/Close Bugs</span>
                         </label>
                     </div>
-                    <div class="rhino-grid-template-areas rhino-mr-5 rhino-middleable">
-                        <label class="rhino-font-500-s rhino-middle"
+                    <div class="rhino-grid-template-areas rhino-mr-5">
+                        <label class="rhino-font-500-s"
                                title="Check for creating Rhino report in addition to any other report already generated by this run. Adding additional reporters can be done under Options page.">
                             <input type="checkbox" id="rh_create_report">
                             <span class="rhino-checkbox"></span>
