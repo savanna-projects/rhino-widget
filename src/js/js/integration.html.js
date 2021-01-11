@@ -9,8 +9,7 @@
  * @returns {string} Rhino Widget HTML.
  */
 function getRhinoWidgetHtml() {
-    return `
-<div id="rh_rhino_module" style="margin: 15px; min-width: 50%; max-width: 100%;">
+    return `<div id="rh_rhino_module" style="margin: 15px; min-width: 50%; max-width: 100%;">
     <style type="text/css" id="ratio.css" scoped>
         :root{
             --ratio: 0.75;
@@ -40,6 +39,7 @@ function getRhinoWidgetHtml() {
             width: 100%;
             display: table-cell;
             border: solid 1px #111;
+            border-top: 0;
             grid-template-columns: auto;
             grid-template-rows: repeat(3, auto);
             grid-template-areas: "." "." ".";
@@ -111,8 +111,20 @@ function getRhinoWidgetHtml() {
             margin-right: calc(1.5em * var(--ratio));
         }
 
+        .rhino-ml-0 {
+            margin-left: 0;
+        }
+
+        .rhino-ml-10 {
+            margin-left: calc(1em * var(--ratio));
+        }
+
         .rhino-ml-15 {
             margin-left: calc(1.5em * var(--ratio));
+        }
+
+        .rhino-mt-0 {
+            margin-top: 0;;
         }
 
         .rhino-mt-5 {
@@ -121,6 +133,14 @@ function getRhinoWidgetHtml() {
 
         .rhino-mt-15 {
             margin-top: calc(1.5em * var(--ratio));
+        }
+
+        .rhino-mb-10 {
+            margin-bottom: calc(1em * var(--ratio));
+        }
+
+        .rhino-mb-0 {
+            margin-bottom: 0;
         }
 
         .rhino-mb-15 {
@@ -173,10 +193,11 @@ function getRhinoWidgetHtml() {
             box-sizing: border-box;
             user-select: none;
             display: block;
-            padding: calc(1em * var(--ratio));
+            padding: calc(0.5em * var(--ratio));
+            padding-left: 0;
+            padding-right: 0;
             position: relative;
             background: var(--background-black);
-            min-height: calc(3em * var(--ratio));
         }
 
             .rhino-top-bar a {
@@ -212,12 +233,16 @@ function getRhinoWidgetHtml() {
             color: var(--primary-black);
         }
 
-        .rhino-font-700 {
-            font-size: calc(2em * var(--ratio));
+        .rhino-font-700,
+        .rhino-font-500,
+        .rhino-font-300 {
+            font-size: calc(1.4em * var(--ratio));
         }
 
-        .rhino-font-700-s {
-            font-size: calc(1.7em * var(--ratio));
+        .rhino-font-700-s,
+        .rhino-font-500-s,
+        .rhino-font-300-s {
+            font-size: calc(1em * var(--ratio));
         }
 
         .rhino-font-700,
@@ -225,25 +250,9 @@ function getRhinoWidgetHtml() {
             font-weight: 700;
         }
 
-        .rhino-font-500 {
-            font-size: calc(1.4em * var(--ratio));
-        }
-
-        .rhino-font-500-s {
-            font-size: calc(1em * var(--ratio));
-        }
-
         .rhino-font-500,
         .rhino-font-500-s {
             font-weight: 500;
-        }
-
-        .rhino-font-300 {
-            font-size: calc(1.4em * var(--ratio));
-        }
-
-        .rhino-font-300-s {
-            font-size: calc(1em * var(--ratio));
         }
 
         .rhino-font-300,
@@ -364,7 +373,7 @@ function getRhinoWidgetHtml() {
     <div class="rhino-grid-container rhino-body">
         <!-- Header -->
         <div class="rhino-grid-template-areas rhino-top-bar">
-            <div class="rhino-grid-container-3-1 rhino-ml-10">
+            <div class="rhino-grid-container-3-1 rhino-ml-10 rhino-mr-10">
                 <div class="rhino-grid-template-areas rhino-mr-10">
                     <a target="_blank"
                        href="https://github.com/savanna-projects"
@@ -392,23 +401,23 @@ function getRhinoWidgetHtml() {
         <!-- Title -->
         <div class="rhino-grid-template-areas rhino-top-panel">
             <span class="rhino-font-700 rhino-primary-black">Rhino</span><span class="rhino-font-700 rhino-primary-red">API</span><br />
-            <span class="rhino-font-300 rhino-primary-black">Automation Integrator</span>
+            <span class="rhino-font-300-s rhino-primary-black">Automation Integrator</span>
         </div>
         <div class="rhino-grid-template-areas">
             <!-- Body Wrapper -->
             <div class="rhino-grid-container-body">
                 <!-- Title -->
                 <div class="rhino-grid-template-areas rhino-mb-15">
-                    <span class="rhino-font-700-s rhino-primary-black"
+                    <span class="rhino-font-700 rhino-primary-black"
                           title="Set playback options such as browser type and driver capabilities.">
                         Playback Settings
                     </span>
                 </div>
                 <div class="rhino-grid-template-areas rhino-mb-15">
-                    <span class="rhino-font-700-s rhino-primary-black">Integration Settings</span>
+                    <span class="rhino-font-700 rhino-primary-black">Integration Settings</span>
                 </div>
                 <!-- Playback Settings Wrapper -->
-                <div class="rhino-grid-container-2-5" style="margin-top:0;">
+                <div class="rhino-grid-container-2-5 rhino-ml-0 rhino-mt-0 rhino-mb-0">
                     <div class="rhino-grid-template-areas rhino-mr-10 rhino-middleable">
                         <span class="rhino-font-500-s rhino-middle"
                               title="Browser or platform on which this test or set will run.">
@@ -500,7 +509,7 @@ function getRhinoWidgetHtml() {
                 </div>
             </div>
         </div>
-        <div class="rhino-grid-template-areas rhino-ml-15 rhino-mr-15 rhino-mb-15">
+        <div class="rhino-grid-template-areas rhino-ml-10 rhino-mr-10 rhino-mb-10">
             <button class="rhino-button-dark"
                     id="rh_run_automation"
                     data-rhino="false"
