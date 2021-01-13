@@ -483,8 +483,10 @@ function invokeAutomation(port, request, sender) {
     });
 }
 
+//TODO: pass capabilities as separate part of the settings
+//TODO: clean capabilities from connector configuration
 function _initConfiguration(request, settings) {
-    return {
+    var configuration = {
         name: C_CONFIGURATION_NAME,
         testsRepository: request.testsRepository,
         driverParameters: _getDriverParameters(request.driverParameters),
@@ -492,9 +494,20 @@ function _initConfiguration(request, settings) {
         engineConfiguration: _getEngingeConfiguration(request.engineConfiguration, settings.engineOptions),
         screenshotsConfiguration: _getScreenshotConfiguration(settings.screenshotsOptions),
         reportConfiguration: _getReportConfiguration(request.reportConfiguration, settings.reportOptions),
-        connectorConfiguration: _getConnectorConfiguration(request.connectorConfiguration, settings.connectorOptions),
-        capabilities: _getCapabilities(request.capabilities, settings.capabilities)
+        connectorConfiguration: _getConnectorConfiguration(request.connectorConfiguration, settings.connectorOptions)
     };
+
+    // build from connector capabilities
+    var capabilitiesStr = isNullOrEmpty(settings.connectorOptions.capabilities) ? "{}" : settings.connectorOptions.capabilities;
+    var capabilitiesJsn = JSON.parse(capabilitiesStr);
+    var capabilities = isNullOrEmpty(capabilitiesJsn.capabilities) ? capabilitiesJsn : capabilitiesJsn.capabilities;
+    var capabilitiesResult = _getCapabilities(request.capabilities, capabilities);
+
+    // update
+    configuration["capabilities"] = capabilitiesResult;
+
+    // get
+    return configuration;
 }
 
 function _getDriverParameters(driverParameters) {
@@ -588,7 +601,15 @@ function _getConnectorConfiguration(fromUser, fromSettings) {
 
     // replace defaults by user and settings values
     defaults = isNullOrEmpty(fromSettings) ? defaults : _addOrReplace(fromSettings, defaults);
-    return _addOrReplace(fromUser, defaults);
+    var configuration = _addOrReplace(fromUser, defaults);
+
+    // delete deprecated keys
+    if (!isNullOrEmpty(configuration.capabilities)) {
+        delete configuration.capabilities;
+    }
+
+    // get
+    return configuration;
 }
 
 function _getCapabilities(fromUser, fromSettings) {
