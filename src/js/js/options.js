@@ -1,157 +1,244 @@
-"use strict";
+﻿"use strict";
 
-// #region *** WIDGET: repository    ***
-
-// REPOSITORY: elements
-// -- A --
-var E_AS_OS_USER = '#as_os_user'
-var E_AS_OS_USER_CHECKBOX = '#as_os_user_checkbox'
-// -- B --
-var E_BULB_CONNECT = "#bulb_connect";
-var E_BULB_CONNECTION = "#bulb_connection";
-// -- C --
-var E_CONNECTOR_CAPABILITIES = "#connector_capabilities";
-var E_CONNECTOR_TYPE = "#connector_type";
-// -- D ---
-var E_DRIVER_CAPABILITIES = "#driver_capabilities";
-var E_DRIVER_OPTIONS = "#driver_options";
-// -- G --
-var E_GLOBAL_DATASOURCE = "#global_datasource";
-var E_GRID_ENDPOINT = "#grid_endpoint";
-// -- P --
+//┌─[ SETUP ]───────────────────────────────────┐
+//│                                             │
+//│ Set all global, static and constants.       │
+//└─────────────────────────────────────────────┘
+//
+//-- constants & elements (A-Z)
+//-- A --
+var E_AS_OS_USER_CHECKBOX = '#asOsUser'
+//-- B --
+var E_BULB_CONNECT = "#bulbConnect";
+var E_BULB_CONNECTION = "#bulbConnection";
+//-- C --
+var E_CONNECTOR_CAPABILITIES = "#connectorCapabilities";
+var E_CONNECTOR_TYPE = "#connector";
+//-- D ---
+var E_DRIVER_CAPABILITIES = "#driverCapabilities";
+var E_DRIVER_OPTIONS = "#driverOptions";
+//-- G --
+var E_GLOBAL_DATASOURCE = "#globalDatasource";
+var E_DRIVER_ENDPOINT = "#gridEndpoint";
+//-- M --
+var E_MESSAGE_CONTAINER = '#rhinoMessageContainer';
+//-- P --
 var E_PASSEORD = "#password";
 var E_PROJECT = "#project";
-// -- R --
-var E_RHINO_CHECK_CONNECTION = "#rhino_check_connection";
-var E_RHINO_CONNECT = "#rhino_connect";
-var E_RHINO_PASSWORD = "#rhino_password";
-var E_RHINO_SERVER = "#rhino_server";
-var E_RHINO_USER_NAME = "#rhino_user_name";
-// -- S --
-var E_SERVER_ADDRESS = "#server_address";
-var E_SETTINGS_APPLY = "#settings_apply";
-var E_SETTINGS_EXPORT = "#settings_export";
-var E_SETTINGS_IMPORT = "#settings_import_file";
-// -- T --
-var E_TEST_SUITE = "#test_suite";
-// -- U --
-var E_USER_NAME = "#user_name";
-// -- W --
-var E_WEB_DRIVER = "#web_driver";
-
-// REPOSITORY: constants
-// -- E --
+//-- R --
+var E_RHINO_CHECK_CONNECTION = "#rhinoCheckConnection";
+var E_RHINO_CONNECT = "#rhinoConnect";
+var E_RHINO_PASSWORD = "#rhinoPassword";
+var E_RHINO_SERVER = "#rhinoServer";
+var E_RHINO_USER_NAME = "#rhinoUserName";
+//-- S --
+var E_SERVER_ADDRESS = "#collection";
+var E_SETTINGS_APPLY = "#settingsApply";
+var E_SETTINGS_EXPORT = "#settingsExport";
+var E_SETTINGS_IMPORT = "#settingsImportFile";
+//-- T --
+var E_TEST_SUITE = "#testSuite";
+//-- U --
+var E_USER_NAME = "#userName";
+//-- W --
+var E_WEB_DRIVER = "#webDriver";
+//
+//-- constants
+//-- E --
 var C_EMPTY_OPTION = "-1";
-
-// REPOSITORY: routes
+//-- G --
+var C_GENERAL_ERROR = 'Something went wrong. Please check the console for additional information.';
+var C_GENERAL_WARNG = 'Settings were not loaded. Please connect or provide a connectible endpoint or save settings at least once.'
+//-- O --
+var C_OPTIONS = 'options';
+//
+//-- routes
 var R_CONNECTORS = "/api/latest/widget/connectors";
 var R_DRIVERS = "/api/latest/widget/drivers";
-
-// #endregion
-
-/**
- * Summary. Clears page loader animation.
- */
-$('#preloader').fadeOut('normall', function () {
-    $(this).remove();
+//
+//-- event handlers
+//-- C --
+document.querySelector(E_SETTINGS_IMPORT).addEventListener('change', importSettings, false);
+document.querySelector(E_SETTINGS_APPLY).addEventListener('click', putSettingsOut);
+document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
+document.querySelector(E_RHINO_CHECK_CONNECTION).addEventListener('click', pingOut);
+document.querySelector(E_RHINO_CONNECT).addEventListener('click', connectOut);
+//-- D --
+document.addEventListener('DOMContentLoaded', () => {
+    getServerDataOut();
+});
+//-- F --
+document.querySelector(E_CONNECTOR_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_CAPABILITIES).addEventListener('focusout', prettify);
+document.querySelector(E_DRIVER_OPTIONS).addEventListener('focusout', prettify);
+document.querySelector(E_GLOBAL_DATASOURCE).addEventListener('focusout', prettify);
+//-- M --
+var port = chrome.runtime.connect({ name: C_OPTIONS });
+port.onMessage.addListener((message, sender) => {
+    messageHandler(message, sender);
 });
 
-function loadOptionsPipeline() {
-    loadNavbar();
-    loadSettings();
-}
+//┌─[ MIDDLEWARE API ]──────────────────────────┐
+//└─────────────────────────────────────────────┘
+//
+// GET /api/ping
+function ping(message, sender) {
+    // setup
+    message["issuer"] = sender;
 
-function loadNavbar() {
-    if ($(window).width() <= 1200) {
+    // exit conditions
+    if (message.statusCode !== 200) {
         return;
     }
 
-    $('ul.nav li.dropdown').hover(function () {
-        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(300);
-    }, function () {
-        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(300);
-    });
+    // user-interface
+    setBulbCss(E_BULB_CONNECTION, 'text-success');
 }
 
-function connect() {
-    // reset
-    setBulbCss(E_BULB_CONNECT, 'text-danger');
-
-    try {
-        // setup
-        var endpoint = $(E_RHINO_SERVER).val();
-
-        // setup conditions
-        var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
-
-        // get endpoint
-        if (!isEndpoint) {
-            endpoint = "https://localhost:9001/"
-        }
-        endpoint = endpoint.endsWith('/')
-            ? endpoint.substr(0, endpoint.length - 1)
-            : endpoint;
-
-        // setup
-        $(E_RHINO_SERVER).val(endpoint);
-
-        // connect
-        chrome.storage.sync.set({ last_endpoint: endpoint }, () => {
-            get(endpoint + R_CONNECTORS, (connectors) => {
-                get(endpoint + R_DRIVERS, (drivers) => {
-                    loadConnectors(connectors);
-                    loadDrivers(drivers);
-                    setBulbCss(E_BULB_CONNECT, 'text-success');
-                });
-            });
-        });
-    } catch (e) {
-        console.error(e);
-        setBulbCss(E_BULB_CONNECT, 'text-danger');
-    }
-}
-
-function checkConnection() {
+function pingOut() {
     // reset
     setBulbCss(E_BULB_CONNECTION, 'text-danger');
 
     // setup
-    var route = '/api/latest/ping'
     var endpoint = $(E_RHINO_SERVER).val();
+    var requestBody = getRequest(C_OPTIONS, '/api/ping', { endpoint: endpoint });
+
+    // get
+    port.postMessage(requestBody);
+}
+
+// GET /api/getServerData
+function getServerData(message, sender) {
+    try {
+        // setup
+        message["issuer"] = sender;
+
+        // exit conditions
+        if (message.statusCode !== 200) {
+            setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', message.data);
+            return;
+        }
+
+        // apply to user interface
+        loadSettings(message);
+    } catch (e) {
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);
+        console.error(e);
+        setBulbCss(E_BULB_CONNECT, 'text-danger');
+    }
+    finally {
+        removeLoader();
+    }
+}
+
+function getServerDataOut() {
+    // setup
+    var requestBody = getRequest(C_OPTIONS, '/api/getServerData', {})
+
+    // get
+    port.postMessage(requestBody);
+}
+
+// GET /api/connect
+function connect(message, sender) {
+    // setup
+    message["issuer"] = sender;
 
     // exit conditions
-    var isEndpoint = !(endpoint === undefined || endpoint === null || endpoint === "");
-    if (!isEndpoint) {
+    if (message.statusCode !== 200) {
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', message.data);
         return;
     }
 
-    // setup
-    endpoint = endpoint.endsWith('/')
-        ? endpoint.substr(0, endpoint.length - 1) + route
-        : endpoint + route;
-
-    // get
-    get(endpoint, (response) => {
-        console.log(response);
-        setBulbCss(E_BULB_CONNECTION, 'text-success');
-    });
+    // user interface
+    setBulbCss(E_BULB_CONNECT, 'text-success');
+    loadEndpoint(message.data.endpoint);
+    loadConnectors(message.data.connectors);
+    loadDrivers(message.data.drivers);
 }
 
-/**
- * Summary. Loads the last saved settings state from local storage.
- */
-function loadSettings() {
-    try {
-        chrome.storage.sync.get(['widget_settings'], (stateObj) => {
-            // exit conditions
-            if (stateObj === null) {
-                return;
-            }
+function connectOut() {
+    // user interface
+    setBulbCss(E_BULB_CONNECT, 'text-danger');
 
-            // put
-            loadDynamicData();
-        });
+    // setup
+    var endpoint = $(E_RHINO_SERVER).val();
+
+    // exit conditions
+    if (typeof (endpoint) === 'undefined' || endpoint === null || endpoint === '') {
+        return;
+    }
+
+    //  get
+    var requestBody = getRequest(C_OPTIONS, '/api/connect', { endpoint: endpoint });
+    port.postMessage(requestBody);
+}
+
+// PUT /api/putSettings
+function putSettings(message, sender) {
+    try {
+        // setup
+        message["issuer"] = sender;
+
+        // exit conditions
+        if (message.statusCode !== 201) {
+            setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', message.data);
+            return;
+        }
+
+        // success
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-success', 'Successfully saved settings.');
     } catch (e) {
+        console.error(e);
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);        
+    }
+    finally {
+        $(E_SETTINGS_APPLY).text('Save Settings');
+        $(E_SETTINGS_APPLY).prop('disabled', false);
+    }
+}
+
+function putSettingsOut() {
+    try {
+        // user interface
+        $(E_SETTINGS_APPLY).prop('disabled', true);
+        $(E_SETTINGS_APPLY).text('Saving...');
+
+        // setup
+        var data = {
+            endpoint: $(E_RHINO_SERVER).val(),
+            playbackOptions: getPlaybackOptionsState(),
+            connectorOptions: getConnectorOptions(),
+            rhinoOptions: getRhinoOptions()
+        };
+        var requestBody = getRequest(C_OPTIONS, '/api/putSettings', data);
+
+        // send
+        port.postMessage(requestBody);
+    } catch (e) {        
+        $(E_SETTINGS_APPLY).text('Save Settings');
+        $(E_SETTINGS_APPLY).prop('disabled', false);
+        console.error(e);
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);
+    }
+}
+
+//┌─[ SETTINGS: Load ]──────────────────────────┐
+//│                                             │
+//│ Settings load functions and helpers.        │
+//└─────────────────────────────────────────────┘
+//
+function loadSettings(stateObj) {
+    try {
+        // exit conditions
+        if (stateObj === null) {
+            return;
+        }
+
+        // put
+        loadDynamicData(stateObj);
+    } catch (e) {
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);
         console.error(e);
         setBulbCss(E_BULB_CONNECT, 'text-danger');
     }
@@ -169,133 +256,126 @@ function importSettings(settingsFile) {
     reader.onload = () => {
         var json = reader.result;
         var statObj = JSON.parse(json);
-        loadAllSettings(statObj);
+
+        loadIntegrationSettings(statObj);
+        loadPlaybackOptions(statObj);
+        loadRhinoOptions(statObj);
     };
     reader.onerror = (e) => {
-        console.log(e);
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-danger', C_GENERAL_ERROR);
+        console.error(e);
+        setBulbCss(E_BULB_CONNECT, 'text-danger');
     };
 }
 
-function loadDynamicData() {
+function loadDynamicData(stateObj) {
+    // setup: user-interface
     setBulbCss(E_BULB_CONNECT, 'text-danger');
-    chrome.storage.sync.get(['last_endpoint', 'widget_settings'], function (storage) {
-        // load server endpoint
-        if (typeof (storage.last_endpoint) === 'undefined' || storage.last_endpoint === null || storage.last_endpoint === '') {
-            return;
-        }
 
-        // set endpoint
-        var endpoint = storage.last_endpoint.endsWith('/')
-            ? storage.last_endpoint.substr(0, storage.last_endpoint.length - 1)
-            : storage.last_endpoint;
+    // setup
+    var endpoint = stateObj.data.endpoint;
+    var connectors = stateObj.data.connectors;
+    var drivers = stateObj.data.drivers;
+    var settings = stateObj.data.settings;
 
-        // get from Rhino Server
-        get(endpoint + R_CONNECTORS, (connectors) => {
-            get(endpoint + R_DRIVERS, (drivers) => {
-                loadConnectors(connectors);
-                loadDrivers(drivers);
-                loadAllSettings(storage.widget_settings, endpoint);
-                setBulbCss(E_BULB_CONNECT, 'text-success');
-            });
-        });
-    });
+    // load server endpoint
+    var isEndpoint = typeof (endpoint) !== 'undefined' && endpoint !== null && endpoint !== '';    
+    if (!isEndpoint) {
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-warning', C_GENERAL_WARNG);
+        return;
+    }
+
+    // set endpoint
+    endpoint = endpoint.endsWith('/')
+        ? endpoint.data.substr(0, endpoint.data.length - 1)
+        : stateObj.data.endpoint;    
+
+    // get from Rhino Server: connectors & drivers
+    loadEndpoint(endpoint);
+    loadConnectors(connectors);
+    loadDrivers(drivers);
+    setBulbCss(E_BULB_CONNECT, 'text-success');
+
+    // load settings
+    var isSettings = typeof (settings) !== 'undefined' && settings !== null && settings !== '';
+    if (!isSettings) {
+        setRhinoMessage(E_MESSAGE_CONTAINER, 'alert-warning', C_GENERAL_WARNG);
+        return;
+    }
+    loadIntegrationSettings(settings);
+    loadPlaybackOptions(settings);
+    loadRhinoOptions(settings);
 }
 
 function loadConnectors(connectors) {
     // get connectors element
-    var connectors_list = $(E_CONNECTOR_TYPE);
-    connectors_list.empty();
+    var connectorsList = $(E_CONNECTOR_TYPE);
+    connectorsList.empty();
 
     // append
     $.each(connectors, (_, item) => {
         var html = '<option title="' + item.description + '" value="' + item.value + '">' + item.name + '</option>'
-        connectors_list.append(html);
+        connectorsList.append(html);
     });
 }
 
 function loadDrivers(drivers) {
     // get connectors element
-    var drivers_list = $(E_WEB_DRIVER);
-    drivers_list.empty();
+    var driversList = $(E_WEB_DRIVER);
+    driversList.empty();
 
     // append
     $.each(drivers, (_, item) => {
         var html = '<option value="' + item + '">' + item + '</option>'
-        drivers_list.append(html);
+        driversList.append(html);
     });
 }
 
-function loadAllSettings(stateObj, rhinoServer) {
-    // exit conditions
-
-    // connector options
-    var isEndpoint = !(typeof (stateObj.last_endpoint) === undefined || stateObj.last_endpoint === null || stateObj.last_endpoint === "");
-    var endpoint = isEndpoint ? endpoint : rhinoServer;
-
+function loadEndpoint(endpoint) {
     $(E_RHINO_SERVER).val(endpoint);
-    $(E_CONNECTOR_TYPE).val(stateObj.connector_options.connector_type);
-    $(E_SERVER_ADDRESS).val(stateObj.connector_options.server_address);
-    $(E_PROJECT).val(stateObj.connector_options.project);
-    $(E_TEST_SUITE).val(stateObj.connector_options.test_suite);
-    $(E_USER_NAME).val(stateObj.connector_options.user_name);
-    $(E_PASSEORD).val(stateObj.connector_options.password);
-    $(E_CONNECTOR_CAPABILITIES).val(stateObj.connector_options.capabilities);
-
-    var osUser = stateObj.connector_options.as_os_user;
-    $(E_AS_OS_USER).attr('value', osUser.toString());
-    $(E_AS_OS_USER_CHECKBOX).attr('class', osUser ? 'fa fas fa-square' : 'far fa-square');
-
-    // playback options
-    $(E_WEB_DRIVER).val(stateObj.playback_options.web_driver);
-    $(E_GRID_ENDPOINT).val(stateObj.playback_options.grid_endpoint);
-    $(E_DRIVER_CAPABILITIES).val(stateObj.playback_options.capabilities);
-    $(E_DRIVER_OPTIONS).val(stateObj.playback_options.options);
-
-    // rhino options
-    $(E_RHINO_USER_NAME).val(stateObj.rhino_options.rhino_user_name);
-    $(E_RHINO_PASSWORD).val(stateObj.rhino_options.rhino_password);
 }
 
-/**
- * Summary. Saves this widget settings state into local storage.
- */
-function saveSettings() {
-    var stateObj = {
-        last_endpoint: $(E_RHINO_SERVER).val(),
-        playback_options: getPlaybackOptionsState(),
-        connector_options: getConnectorOptions(),
-        rhino_options: getRhinoOptions()
-    };
-
-    // save to local storage
-    chrome.storage.sync.set({ widget_settings: stateObj }, () => {        
-        try {
-            $(E_SETTINGS_APPLY).prop('disabled', true);
-            $(E_SETTINGS_APPLY).text('Saving...');
-        } catch (e) {
-            console.log(e);
-        }
-        finally {
-            $(E_SETTINGS_APPLY).text('Save Settings');
-            $(E_SETTINGS_APPLY).prop('disabled', false);
-        }
-    });
+function loadIntegrationSettings(stateObj) {
+    $(E_CONNECTOR_TYPE).val(stateObj.connectorOptions.connector);
+    $(E_SERVER_ADDRESS).val(stateObj.connectorOptions.collection);
+    $(E_PROJECT).val(stateObj.connectorOptions.project);
+    $(E_TEST_SUITE).val(stateObj.connectorOptions.testSuite);
+    $(E_USER_NAME).val(stateObj.connectorOptions.userName);
+    $(E_PASSEORD).val(stateObj.connectorOptions.password);
+    $(E_CONNECTOR_CAPABILITIES).val(stateObj.connectorOptions.capabilities);
+    $(E_AS_OS_USER_CHECKBOX).prop('checked', stateObj.connectorOptions.asOsUser);
 }
 
+function loadPlaybackOptions(stateObj) {
+    $(E_WEB_DRIVER).val(stateObj.playbackOptions.webDriver);
+    $(E_DRIVER_ENDPOINT).val(stateObj.playbackOptions.gridEndpoint);
+    $(E_DRIVER_CAPABILITIES).val(stateObj.playbackOptions.capabilities);
+    $(E_DRIVER_OPTIONS).val(stateObj.playbackOptions.options);
+}
+
+function loadRhinoOptions(stateObj) {
+    $(E_RHINO_USER_NAME).val(stateObj.rhinoOptions.userName);
+    $(E_RHINO_PASSWORD).val(stateObj.rhinoOptions.password);
+}
+
+//┌─[ SETTINGS: Save ]──────────────────────────┐
+//│                                             │
+//│ Settings save functions and helpers.        │
+//└─────────────────────────────────────────────┘
 function exportSettings() {
     try {
         // setup
         var stateObj = {
-            playback_options: getPlaybackOptionsState(),
-            connector_options: getConnectorOptions(),
-            rhino_options: getRhinoOptions()
+            playbackOptions: getPlaybackOptionsState(),
+            connectorOptions: getConnectorOptions(),
+            rhinoOptions: getRhinoOptions()
         };
 
         // save
         var onSettings = JSON.stringify(stateObj, null, 4);
         var vBlob = new Blob([onSettings], { type: "octet/stream" });
         var vName = 'rhino_settings.json';
-        var vId = 'rh_virtual_link';
+        var vId = 'rhinoVirtualLink';
         var vUrl = window.URL.createObjectURL(vBlob);
 
         // build
@@ -310,14 +390,18 @@ function exportSettings() {
         // clean
         $("#" + vId).remove();
     } catch (e) {
-        console.log(e);
+        setRhinoMessage(
+            E_MESSAGE_CONTAINER,
+            'alert-danger',
+            C_GENERAL_ERROR);
+        console.error(e);
     }
 }
 
 function getPlaybackOptionsState() {
     return {
-        web_driver: $(E_WEB_DRIVER + " option").length > 0 ? $(E_WEB_DRIVER + " option:selected").val() : C_EMPTY_OPTION,
-        grid_endpoint: $(E_GRID_ENDPOINT).val(),
+        webDriver: $(E_WEB_DRIVER + " option").length > 0 ? $(E_WEB_DRIVER + " option:selected").val() : C_EMPTY_OPTION,
+        gridEndpoint: $(E_DRIVER_ENDPOINT).val(),
         capabilities: $(E_DRIVER_CAPABILITIES).val(),
         options: $(E_DRIVER_OPTIONS).val()
     };
@@ -325,68 +409,35 @@ function getPlaybackOptionsState() {
 
 function getConnectorOptions() {
     // shortcuts
-    var con_tp = $(E_CONNECTOR_TYPE + " option").length > 0
+    var connector = $(E_CONNECTOR_TYPE + " option").length > 0
         ? $(E_CONNECTOR_TYPE + " option:selected").val()
         : C_EMPTY_OPTION;
 
     // setup state object
     return {
-        connector_type: con_tp,
-        server_address: $(E_SERVER_ADDRESS).val(),
+        connector: connector,
+        collection: $(E_SERVER_ADDRESS).val(),
         project: $(E_PROJECT).val(),
-        test_suite: $(E_TEST_SUITE).val(),
-        user_name: $(E_USER_NAME).val(),
+        testSuite: $(E_TEST_SUITE).val(),
+        userName: $(E_USER_NAME).val(),
         password: $(E_PASSEORD).val(),
         capabilities: $(E_CONNECTOR_CAPABILITIES).val(),
-        as_os_user: $(E_AS_OS_USER).attr('value') === "true" ? true : false
+        asOsUser: $(E_AS_OS_USER_CHECKBOX)[0].checked
     };
 }
 
 function getRhinoOptions() {
     return {
-        rhino_user_name: $(E_RHINO_USER_NAME).val(),
-        rhino_password: $(E_RHINO_PASSWORD).val()
+        userName: $(E_RHINO_USER_NAME).val(),
+        password: $(E_RHINO_PASSWORD).val()
     };
 }
 
-function prettify(element) {
-    try {
-        // setup
-        var json = $(element.currentTarget).val();
-
-        // prettify
-        var objt = JSON.parse(json);
-        json = JSON.stringify(objt, null, 4);
-
-        // set
-        $(element.currentTarget).val(json);
-    } catch (e) {
-        alert('Invalid JSON in ' + $(element.currentTarget).attr('name') + ', please verify and fix the errors.');
-    }
-}
-// #endregion
-
-// Utility Scripts
-function asOsUser() {
-    // setup
-    var hidden = document.querySelector(E_AS_OS_USER);
-    var checkbox = document.querySelector(E_AS_OS_USER_CHECKBOX);
-    var value = hidden.getAttribute('value');
-    var faClass = 'far fa-square'
-
-    // switch
-    var newValue = value === 'true' ? 'false' : 'true';
-    hidden.setAttribute('value', newValue);
-
-    // set
-    if (typeof (newValue) !== 'undefined' && newValue === 'true') {
-        faClass = 'fas fa-square'
-    }
-
-    // set
-    checkbox.setAttribute('class', faClass);
-}
-
+//┌─[ UTILITIES ]───────────────────────────────┐
+//│                                             │
+//│ General purposes functions and helpers.     │
+//└─────────────────────────────────────────────┘
+//
 function setBulbCss(element, cssClass) {
     // setup
     var onClass = $(element).attr("class").replace('text-danger', '').replace('text-success');
@@ -401,22 +452,3 @@ function setBulbCss(element, cssClass) {
     onClass += " " + cssClass;
     $(element).attr('class', onClass);
 }
-
-// document
-document.addEventListener('DOMContentLoaded', loadOptionsPipeline);
-
-// focus out
-document.querySelector(E_CONNECTOR_CAPABILITIES).addEventListener('focusout', prettify);
-document.querySelector(E_DRIVER_CAPABILITIES).addEventListener('focusout', prettify);
-document.querySelector(E_DRIVER_OPTIONS).addEventListener('focusout', prettify);
-document.querySelector(E_GLOBAL_DATASOURCE).addEventListener('focusout', prettify);
-
-// click
-document.querySelector(E_SETTINGS_APPLY).addEventListener('click', saveSettings);
-document.querySelector(E_SETTINGS_EXPORT).addEventListener('click', exportSettings);
-document.querySelector(E_AS_OS_USER_CHECKBOX).addEventListener('click', asOsUser);
-document.querySelector(E_RHINO_CHECK_CONNECTION).addEventListener('click', checkConnection);
-document.querySelector(E_RHINO_CONNECT).addEventListener('click', connect);
-
-// change
-document.querySelector(E_SETTINGS_IMPORT).addEventListener('change', importSettings, false);

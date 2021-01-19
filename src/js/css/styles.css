@@ -7408,3 +7408,7 @@ input.visually-hidden:focus + label {
 input.visually-hidden:focus-within + label {
 	outline: thin dotted;
 }
+
+.unselectable {
+	user-select: none;
+}
