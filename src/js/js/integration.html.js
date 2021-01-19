@@ -5,14 +5,18 @@
 //
 /**
  * Summary: Gets the HTML for injecting Rhino Widget.
+ * 
+ * @param {number} ratio The widget ration when implementing on A.L.M
  *
  * @returns {string} Rhino Widget HTML.
  */
-function getRhinoWidgetHtml() {
+function getRhinoWidgetHtml(ratio) {
+    ratio = isNullOrEmpty(ratio) ? 1.0 : ratio;
+
     return `<div id="rh_rhino_module" style="margin: 15px; min-width: 50%; max-width: 100%;">
     <style type="text/css" id="ratio.css" scoped>
         :root{
-            --ratio: 0.75;
+            --ratio: $(ratio);
         }
     </style>
 
@@ -525,7 +529,7 @@ function getRhinoWidgetHtml() {
             </button>
         </div>
     </div>
-</div>`
+</div>`.replace("$(ratio)", ratio.toString());
 }
 
 /**

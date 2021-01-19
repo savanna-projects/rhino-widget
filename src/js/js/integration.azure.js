@@ -171,6 +171,7 @@ function mainAzure() {
         // build
         serviceBuilder
             .setConnector(C_CONNECTOR)
+            .setHtml(getRhinoWidgetHtml(1.0))
             .setConfirmSiteCondition(confirmSite)
             .setConnectorCapabilitiesFactory(getConnectorCapabilities)
             .setContainerFactory(getContainer)

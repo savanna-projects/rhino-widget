@@ -133,6 +133,7 @@ function mainTestRail() {
         // build
         serviceBuilder
             .setConnector(C_CONNECTOR)
+            .setHtml(getRhinoWidgetHtml(0.9))
             .setConfirmSiteCondition(confirmSite)
             .setConnectorCapabilitiesFactory(getConnectorCapabilities)
             .setContainerFactory(getContainer)
