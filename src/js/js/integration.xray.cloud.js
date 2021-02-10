@@ -91,7 +91,9 @@ function mainXrayCloud() {
     */
     function getTestCases() {
         // extract issue id
-        var path = "//div[contains(@data-test-id,'current-issue-container')]//a/span/span";
+        var path =
+            "//div[contains(@data-test-id,'current-issue-container')]//a/span/span|" +
+            "//div[contains(@data-test-id,'current-issue-container')]//a/span";
         var element = document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
         // setup
