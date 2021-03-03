@@ -90,10 +90,9 @@ function mainXrayCloud() {
     * @returns {Array} A collection of test cases (runnable entities).
     */
     function getTestCases() {
-        // extract issue id
         var path =
-            "//div[contains(@data-test-id,'current-issue-container')]//a/span/span|" +
-            "//div[contains(@data-test-id,'current-issue-container')]//a/span";
+            "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span/span|" +
+            "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span";
         var element = document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
         // setup

@@ -314,7 +314,7 @@ function loadConnectors(connectors) {
 
     // append
     $.each(connectors, (_, item) => {
-        var html = '<option title="' + item.description + '" value="' + item.value + '">' + item.name + '</option>'
+        var html = '<option title="' + item.entity.Description + '" value="' + item.key + '">' + item.entity.Name + '</option>'
         connectorsList.append(html);
     });
 }
@@ -326,7 +326,7 @@ function loadDrivers(drivers) {
 
     // append
     $.each(drivers, (_, item) => {
-        var html = '<option value="' + item + '">' + item + '</option>'
+        var html = '<option value="' + item.key + '">' + item.key + '</option>'
         driversList.append(html);
     });
 }

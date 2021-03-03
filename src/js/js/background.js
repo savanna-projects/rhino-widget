@@ -21,9 +21,10 @@ var C_BACKGROUND = "background";
 var C_CONFIGURATION_NAME = "Rhino Automation - Widget";
 //
 //-- routes
-var R_CONNECTORS = "/api/latest/widget/connectors";
-var R_DRIVERS = "/api/latest/widget/drivers";
-var R_EXECUTE = "/api/latest/rhino/execute";
+var R_VERSION = "/api/v3"
+var R_CONNECTORS = R_VERSION + "/meta/connectors";
+var R_DRIVERS = R_VERSION + "/meta/drivers";
+var R_EXECUTE = R_VERSION + "/rhino/configurations/invoke";
 //
 //-- state
 var recorderWindow = null;
