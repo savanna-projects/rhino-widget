@@ -423,7 +423,7 @@ function getRhinoWidgetHtml(ratio) {
                 <!-- Playback Settings Wrapper -->
                 <div class="rhino-grid-container-2-5 rhino-ml-0 rhino-mt-0 rhino-mb-0">
                     <div class="rhino-grid-template-areas rhino-mr-10 rhino-middleable">
-                        <span class="rhino-font-500-s rhino-middle"
+                        <span class="rhino-font-500-s rhino-middle rhino-primary-black"
                               title="Browser or platform on which this test or set will run.">
                             Browser (Platform):
                         </span>
@@ -442,7 +442,7 @@ function getRhinoWidgetHtml(ratio) {
                     </div>
 
                     <div class="rhino-grid-template-areas rhino-mr-10 rhino-middleable">
-                        <span class="rhino-font-500-s rhino-middle"
+                        <span class="rhino-font-500-s rhino-middle rhino-primary-black"
                               title="Web Driver location. Can be a local folder, Grid endpoint or 3rd party Grid endpoint.">
                             Driver Endpoint:
                         </span>
@@ -455,7 +455,7 @@ function getRhinoWidgetHtml(ratio) {
                     </div>
 
                     <div class="rhino-grid-template-areas rhino-mr-10 rhino-middleable">
-                        <span class="rhino-font-500-s rhino-middle"
+                        <span class="rhino-font-500-s rhino-middle rhino-primary-black"
                               title="The maximum number of tests that will be executed in parallel.">
                             Max Parallel Execution:
                         </span>
@@ -465,7 +465,7 @@ function getRhinoWidgetHtml(ratio) {
                     </div>
 
                     <div class="rhino-grid-template-areas rhino-mr-10">
-                        <span class="rhino-font-500-s"
+                        <span class="rhino-font-500-s rhino-primary-black"
                               title="The capabilities of the selected platform as supported by the respective vendor.">
                             Driver Capabilities:
                         </span>
@@ -475,7 +475,7 @@ function getRhinoWidgetHtml(ratio) {
                     </div>
 
                     <div class="rhino-grid-template-areas rhino-mr-10">
-                        <span class="rhino-font-500-s"
+                        <span class="rhino-font-500-s rhino-primary-black"
                               title="The options of the selected platform as supported by the respective vendor.">
                             Driver Options:
                         </span>

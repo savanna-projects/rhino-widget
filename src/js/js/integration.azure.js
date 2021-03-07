@@ -130,7 +130,8 @@ function mainAzure() {
         // get test case id column index
         var columnsPath =
             "//div[contains(@class,'grid-row-current') and contains(@id,'row_vss')]/ancestor::div[contains(@id,'vss')]/div[@class='grid-header']//div[@aria-label]|" +
-            "//div[@class='test-plan-author-tab']//th";
+            "//div[@class='test-plan-author-tab']//th|" +
+            "//tr[.//th[.='Test Case Id']]/th"; // azure DevOps cloud 22/02/2021
         var elements = document.evaluate(columnsPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
         // find
@@ -145,8 +146,9 @@ function mainAzure() {
     function _getTestCasesByPosition(idColumnPosition) {
         // setup
         var idPath =
-            "//div[contains(@class,'grid-row-selected') and contains(@id,'row_vss')]/div[" + idColumnPosition + "]" + "|" +
-            "//div[@class='test-plan-author-tab']//tr[contains(@class,'selected')]/td[" + idColumnPosition + "]";
+            "//div[contains(@class,'grid-row-selected') and contains(@id,'row_vss')]/div[" + idColumnPosition + "]|" +
+            "//div[@class='test-plan-author-tab']//tr[contains(@class,'selected')]/td[" + idColumnPosition + "]|" +
+            "//table[.//th[.='Test Case Id']]//tr[contains(@class, 'selected')]/td[" + idColumnPosition+"]"; // azure DevOps cloud 22/02/2021
         var elements = document.evaluate(idPath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
         // build
@@ -171,7 +173,7 @@ function mainAzure() {
         // build
         serviceBuilder
             .setConnector(C_CONNECTOR)
-            .setHtml(getRhinoWidgetHtml(1.0))
+            .setHtml(getRhinoWidgetHtml(0.80))
             .setConfirmSiteCondition(confirmSite)
             .setConnectorCapabilitiesFactory(getConnectorCapabilities)
             .setContainerFactory(getContainer)
