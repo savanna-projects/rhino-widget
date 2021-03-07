@@ -36,6 +36,9 @@ function mainXrayCloud() {
     //-- C --
     var C_CONNECTOR = "connector_xray_cloud";
     var C_CONTAINER_PATH = "//div[contains(@data-test-id,'issue.views.issue-details.issue-layout.left-most-column')]";
+    var C_ENTITIES_PATH =
+        "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span/span|" +
+        "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span";
 
     //┌─[ INTEGRATION INTERFACE ]───────────────────┐
     //│                                             │
@@ -51,7 +54,7 @@ function mainXrayCloud() {
     function confirmSite() {
         // setup conditions
         var isPath = document
-            .evaluate(C_CONTAINER_PATH, document, null, XPathResult.BOOLEAN_TYPE, null)
+            .evaluate(C_ENTITIES_PATH, document, null, XPathResult.BOOLEAN_TYPE, null)
             .booleanValue;
         var isUrl = window.location.href.includes("atlassian.net")
 
@@ -90,9 +93,7 @@ function mainXrayCloud() {
     * @returns {Array} A collection of test cases (runnable entities).
     */
     function getTestCases() {
-        var path =
-            "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span/span|" +
-            "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span";
+        var path = C_ENTITIES_PATH;
         var element = document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
         // setup

@@ -244,7 +244,7 @@ function _getEngingeConfiguration() {
     var maxParallel = _getUiElement(E_MAX_PARALLEL);
 
     // normalize
-    maxParallel = maxParallel === -1 ? 1 : maxParallel.value;
+    maxParallel = maxParallel === -1 ? 1 : parseInt(maxParallel.value);
 
     // setup target
     return {
