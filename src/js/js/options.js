@@ -314,7 +314,7 @@ function loadConnectors(connectors) {
 
     // append
     $.each(connectors, (_, item) => {
-        var html = '<option title="' + item.entity.Description + '" value="' + item.key + '">' + item.entity.Name + '</option>'
+        var html = '<option title="' + item.entity.description + '" value="' + item.key + '">' + item.entity.name + '</option>'
         connectorsList.append(html);
     });
 }
