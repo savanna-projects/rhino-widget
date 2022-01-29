@@ -34,7 +34,7 @@ function mainAzure() {
     //-- constants (A-Z)
     //
     //-- C --
-    var C_CONNECTOR = "connector_azure";
+    var C_CONNECTOR = "ConnectorAzure";
     var C_CONTAINER_PATH =
         "//div[@class='content-section']//div[@class='hub-content']|" +
         "//div[@data-renderedregion='content' and @role='main']";

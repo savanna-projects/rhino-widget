@@ -34,7 +34,7 @@ function mainTestRail() {
     //-- constants (A-Z)
     //
     //-- C --
-    var C_CONNECTOR = "connector_test_rail";
+    var C_CONNECTOR = "ConnectorTestRail";
     var C_CONTAINER_PATH = "//div[@id='content-inner']";
     //
     //-- P --
