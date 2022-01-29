@@ -34,7 +34,7 @@ function mainXrayCloud() {
     //-- constants (A-Z)
     //
     //-- C --
-    var C_CONNECTOR = "connector_xray_cloud";
+    var C_CONNECTOR = "ConnectorXrayCloud";
     var C_CONTAINER_PATH = "//div[contains(@data-test-id,'issue.views.issue-details.issue-layout.left-most-column')]";
     var C_ENTITIES_PATH =
         "//div[contains(@data-test-id,'current-issue-container') and (.//button[contains(@aria-label,'Test Set') or contains(@aria-label,'Test Paln') or contains(@aria-label,'Test') or contains(@aria-label,'Test Execution')])]//a/span/span|" +

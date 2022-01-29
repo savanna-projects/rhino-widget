@@ -683,8 +683,7 @@ function getRecorder(port, request, sender) {
         recorderWindow = window.open(
             result.rhinoEndpoint,
             '_blank',
-            'location=yes,height=' + window.screen.height.toString() + ',width=600,scrollbars=yes,status=yes',
-            true);
+            'location=yes,height=' + window.screen.height.toString() + ',width=600,scrollbars=yes,status=yes');
 
         // get
         var createdResponse = messageBuilder.withStatusCode(201).withData('Get-Recorder = Created').build();

@@ -34,7 +34,7 @@ function mainXrayOnprem() {
     //-- constants (A-Z)
     //
     //-- C --
-    var C_CONNECTOR = "connector_xray";
+    var C_CONNECTOR = "ConnectorXray";
     var C_CONTAINER_PATH = "//div[@class='aui-item issue-main-column']";
 
     //┌─[ INTEGRATION INTERFACE ]───────────────────┐
