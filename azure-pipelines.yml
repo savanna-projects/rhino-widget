@@ -58,7 +58,7 @@ steps:
 - task: GitHubRelease@1
   displayName: 'create GitHub tag'
   inputs:
-    gitHubConnection: 'GitHub connection - Rhino API'
+    gitHubConnection: 'github.com'
     repositoryName: 'savanna-projects/rhino-widget'
     action: 'create'
     target: '$(Build.SourceVersion)'
