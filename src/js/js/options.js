@@ -30,7 +30,7 @@ var E_RHINO_CHECK_CONNECTION = "#rhinoCheckConnection";
 var E_RHINO_CONNECT = "#rhinoConnect";
 var E_RHINO_PASSWORD = "#rhinoPassword";
 var E_RHINO_SERVER = "#rhinoServer";
-var E_RHINO_USER_NAME = "#rhinoUserName";
+var E_RHINO_USER_NAME = "#rhinoUsername";
 //-- S --
 var E_SERVER_ADDRESS = "#collection";
 var E_SETTINGS_APPLY = "#settingsApply";
@@ -39,7 +39,7 @@ var E_SETTINGS_IMPORT = "#settingsImportFile";
 //-- T --
 var E_TEST_SUITE = "#testSuite";
 //-- U --
-var E_USER_NAME = "#userName";
+var E_USER_NAME = "#username";
 //-- W --
 var E_WEB_DRIVER = "#webDriver";
 //
@@ -340,7 +340,7 @@ function loadIntegrationSettings(stateObj) {
     $(E_SERVER_ADDRESS).val(stateObj.connectorOptions.collection);
     $(E_PROJECT).val(stateObj.connectorOptions.project);
     $(E_TEST_SUITE).val(stateObj.connectorOptions.testSuite);
-    $(E_USER_NAME).val(stateObj.connectorOptions.userName);
+    $(E_USER_NAME).val(stateObj.connectorOptions.username);
     $(E_PASSEORD).val(stateObj.connectorOptions.password);
     $(E_CONNECTOR_CAPABILITIES).val(stateObj.connectorOptions.capabilities);
     $(E_AS_OS_USER_CHECKBOX).prop('checked', stateObj.connectorOptions.asOsUser);
@@ -354,7 +354,7 @@ function loadPlaybackOptions(stateObj) {
 }
 
 function loadRhinoOptions(stateObj) {
-    $(E_RHINO_USER_NAME).val(stateObj.rhinoOptions.userName);
+    $(E_RHINO_USER_NAME).val(stateObj.rhinoOptions.username);
     $(E_RHINO_PASSWORD).val(stateObj.rhinoOptions.password);
 }
 
@@ -419,7 +419,7 @@ function getConnectorOptions() {
         collection: $(E_SERVER_ADDRESS).val(),
         project: $(E_PROJECT).val(),
         testSuite: $(E_TEST_SUITE).val(),
-        userName: $(E_USER_NAME).val(),
+        username: $(E_USER_NAME).val(),
         password: $(E_PASSEORD).val(),
         capabilities: $(E_CONNECTOR_CAPABILITIES).val(),
         asOsUser: $(E_AS_OS_USER_CHECKBOX)[0].checked
@@ -428,7 +428,7 @@ function getConnectorOptions() {
 
 function getRhinoOptions() {
     return {
-        userName: $(E_RHINO_USER_NAME).val(),
+        username: $(E_RHINO_USER_NAME).val(),
         password: $(E_RHINO_PASSWORD).val()
     };
 }

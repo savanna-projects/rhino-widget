@@ -538,7 +538,7 @@ function _getAuthentication(authentication) {
     // setup default values
     var defaults = {
         password: "",
-        userName: ""
+        username: ""
     }
 
     // get
@@ -594,7 +594,7 @@ function _getConnectorConfiguration(fromUser, fromSettings) {
     var defaults = {
         collection: "",
         password: "",
-        userName: "",
+        username: "",
         project: "",
         bugManager: false,
         dryRun: true
